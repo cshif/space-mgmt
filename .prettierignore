@@ -1,0 +1,9 @@
+# Ignore artifacts:
+.DS_Store
+*.local
+build
+coverage
+node_modules
+node_modules/*
+src-tauri
+dist
