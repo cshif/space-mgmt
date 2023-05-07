@@ -28,7 +28,7 @@ const positionAbsolute = css`
 
 const size = {
   width: window.innerWidth,
-  height: window.innerHeight
+  height: 840
 };
 
 function getTopLeftCoordinate(): number | null {
