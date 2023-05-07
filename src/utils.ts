@@ -125,3 +125,16 @@ export function getReferenceCoordinateByDirection(
       return { x, y: y + height };
   }
 }
+
+// ref. https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
+export function editingRectOverlapWithOthers(
+  fixedRect: RectData,
+  movingRect: RectData
+): string | boolean {
+  return fixedRect.x < movingRect.x + movingRect.width &&
+    fixedRect.x + fixedRect.width > movingRect.x &&
+    fixedRect.y < movingRect.y + movingRect.height &&
+    fixedRect.height + fixedRect.y > movingRect.y
+    ? fixedRect.id
+    : false;
+}

@@ -7,7 +7,8 @@ import {
   mapToRectData,
   getRectByCoordinate,
   getDirectionByCoordinate,
-  getUpdatedRectData
+  getUpdatedRectData,
+  editingRectOverlapWithOthers
 } from '../utils';
 import {
   Rect,
@@ -17,7 +18,7 @@ import {
   Direction,
   Coordinate
 } from '../types';
-import defaultConfig from '../config';
+import defaultConfig, { errorColor } from '../config';
 
 const positionAbsolute = css`
   position: absolute;
@@ -32,8 +33,15 @@ const size = {
 
 const gen = rough.generator();
 
-function createRect({ id, x, y, width, height }: RectData): Rect {
-  const rect: Drawable = gen.rectangle(x, y, width, height, defaultConfig);
+function createRect({
+  id,
+  x,
+  y,
+  width,
+  height,
+  config = defaultConfig
+}: RectData): Rect {
+  const rect: Drawable = gen.rectangle(x, y, width, height, config);
   return { id, x, y, width, height, rect };
 }
 
@@ -65,6 +73,8 @@ function EditingArea() {
   const [resizing, setResizing] = useState(false);
   const [direction, setDirection] = useState<Direction | null>(null);
   const [initialRectData, setInitialRectData] = useState<RectData | null>(null);
+
+  const [collision, setCollision] = useState(false);
 
   useLayoutEffect(() => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -208,10 +218,25 @@ function EditingArea() {
       x: originalCoordinate.x + clientX - grabbedCoordinates.initialX,
       y: originalCoordinate.y + clientY - grabbedCoordinates.initialY
     };
-    copyEls[rectIndex] = createRect({
-      ...(rect as RectData),
-      ...updatedCoordinate
-    });
+
+    let updatedRectData = { ...(rect as RectData), ...updatedCoordinate };
+    const overlapRectIds = copyEls
+      .filter(
+        (el) =>
+          el.id !== rectId && editingRectOverlapWithOthers(el, rect as RectData)
+      )
+      .map((el) => el.id);
+    if (overlapRectIds.length) {
+      setCollision(true);
+      updatedRectData = {
+        ...updatedRectData,
+        config: { ...defaultConfig, fill: errorColor, stroke: errorColor }
+      };
+    } else {
+      setCollision(false);
+    }
+
+    copyEls[rectIndex] = createRect(updatedRectData);
     setElements(copyEls);
     localStorage.setItem(
       'space_mgmt_areas',
@@ -239,11 +264,29 @@ function EditingArea() {
 
     const copyEls: Rect[] = [...elements];
     const rectIndex = localData.findIndex((i: RectData) => i.id === rectId);
-    const newRectData = getUpdatedRectData(
+    const rect = localData.find((i: RectData) => i.id === rectId);
+
+    let newRectData = getUpdatedRectData(
       initialRectData as RectData,
       originalCoordinate,
       modifiedGrabbedCoordinates
     );
+    const overlapRectIds = copyEls
+      .filter(
+        (el) =>
+          el.id !== rectId && editingRectOverlapWithOthers(el, rect as RectData)
+      )
+      .map((el) => el.id);
+    if (overlapRectIds.length) {
+      setCollision(true);
+      newRectData = {
+        ...newRectData,
+        config: { ...defaultConfig, fill: errorColor, stroke: errorColor }
+      };
+    } else {
+      setCollision(false);
+    }
+
     copyEls[rectIndex] = createRect(newRectData);
     setElements(copyEls);
     localStorage.setItem(
@@ -259,13 +302,33 @@ function EditingArea() {
     const index = elements.length - 1;
     const { x, y } = elements[index];
     const { clientX, clientY } = event;
-    copyEls[index] = createRect({
+
+    let updatedRectData: RectData = {
       id: copyEls[index].id,
       x,
       y,
       width: clientX - x,
       height: clientY - y
-    });
+    };
+    const overlapRectIds = copyEls
+      .filter((el) => {
+        const rect = localData.find(
+          (i: RectData) => i.id === elements[index].id
+        ) as RectData;
+        return el.id !== rect.id && editingRectOverlapWithOthers(el, rect);
+      })
+      .map((el) => el.id);
+    if (overlapRectIds.length) {
+      setCollision(true);
+      updatedRectData = {
+        ...updatedRectData,
+        config: { ...defaultConfig, fill: errorColor, stroke: errorColor }
+      };
+    } else {
+      setCollision(false);
+    }
+
+    copyEls[index] = createRect(updatedRectData);
     setElements(copyEls);
     localStorage.setItem(
       'space_mgmt_areas',

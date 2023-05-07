@@ -1,4 +1,4 @@
-import type { Drawable } from 'roughjs/bin/core';
+import type { Drawable, Options } from 'roughjs/bin/core';
 
 export interface Coordinate {
   x: number;
@@ -15,7 +15,9 @@ export interface Rect extends Coordinate, Size {
   rect: Drawable;
 }
 
-export type RectData = Omit<Rect, 'rect'>;
+export interface RectData extends Omit<Rect, 'rect'> {
+  config?: Options;
+}
 
 export interface GrabbedOrdinates {
   initialX: number;
