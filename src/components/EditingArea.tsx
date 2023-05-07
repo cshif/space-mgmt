@@ -31,6 +31,14 @@ const size = {
   height: window.innerHeight
 };
 
+function getTopLeftCoordinate(): number | null {
+  const editingArea = document.getElementById('editing_area'),
+    bodyRect = document.body.getBoundingClientRect(),
+    editingAreaRect = editingArea?.getBoundingClientRect() ?? null;
+  if (editingAreaRect == null) return null;
+  return editingAreaRect.top - bodyRect.top;
+}
+
 const gen = rough.generator();
 
 function createRect({
@@ -46,6 +54,8 @@ function createRect({
 }
 
 function EditingArea() {
+  const [topOffset, setTopOffset] = useState<number | null>(null);
+
   const localData: RectData[] = JSON.parse(
     localStorage.getItem('space_mgmt_areas') as string
   );
@@ -106,9 +116,17 @@ function EditingArea() {
     });
   }, [elements]);
 
+  useLayoutEffect(() => {
+    const offset = getTopLeftCoordinate();
+    setTopOffset(offset);
+  }, [topOffset]);
+
   function handleMouseDown(event: MouseEvent) {
-    const { clientX, clientY } = event;
-    const isHoverOnRect = !!getRectByCoordinate(clientX, clientY)?.id;
+    const { pageX, pageY } = event;
+    const isHoverOnRect = !!getRectByCoordinate(
+      pageX,
+      pageY - Number(topOffset)
+    )?.id;
 
     if (isHoverOnRect) {
       startDragging(event);
@@ -118,20 +136,24 @@ function EditingArea() {
   }
 
   function startDragging(event: MouseEvent) {
-    const { clientX, clientY } = event;
-    const rectData = getRectByCoordinate(clientX, clientY);
+    const { pageX, pageY } = event;
+    const rectData = getRectByCoordinate(pageX, pageY - Number(topOffset));
 
     if (rectData == null) return;
 
     setGrabbedCoordinates({
       ...grabbedCoordinates,
-      initialX: clientX,
-      initialY: clientY
+      initialX: pageX,
+      initialY: pageY
     });
     setOriginalCoordinate({ x: rectData.x, y: rectData.y });
     setInitialRectData(rectData);
 
-    const direction = getDirectionByCoordinate(rectData, clientX, clientY);
+    const direction = getDirectionByCoordinate(
+      rectData,
+      pageX,
+      pageY - Number(topOffset)
+    );
     if (direction) {
       setResizing(true);
     } else {
@@ -144,8 +166,8 @@ function EditingArea() {
 
     const newEl = createRect({
       id: `ref_${uuid()}`,
-      x: event.clientX,
-      y: event.clientY,
+      x: event.pageX,
+      y: event.pageY,
       width: 0,
       height: 0
     });
@@ -202,21 +224,21 @@ function EditingArea() {
   }
 
   function grab(event: MouseEvent) {
-    const { clientX, clientY } = event;
-    if (clientX < 0 || clientY < 0) return;
+    const { pageX, pageY } = event;
+    if (pageX < 0 || pageY < 0) return;
 
     setGrabbedCoordinates({
       ...grabbedCoordinates,
-      finalX: clientX,
-      finalY: clientY
+      finalX: pageX,
+      finalY: pageY
     });
 
     const copyEls: Rect[] = [...elements];
     const rectIndex = localData.findIndex((i: RectData) => i.id === rectId);
     const rect = localData.find((i: RectData) => i.id === rectId);
     const updatedCoordinate = {
-      x: originalCoordinate.x + clientX - grabbedCoordinates.initialX,
-      y: originalCoordinate.y + clientY - grabbedCoordinates.initialY
+      x: originalCoordinate.x + pageX - grabbedCoordinates.initialX,
+      y: originalCoordinate.y + pageY - grabbedCoordinates.initialY
     };
 
     let updatedRectData = { ...(rect as RectData), ...updatedCoordinate };
@@ -245,19 +267,14 @@ function EditingArea() {
   }
 
   function resize(event: MouseEvent) {
-    const { clientX, clientY } = event;
-    if (
-      clientX < 0 ||
-      clientY < 0 ||
-      direction == null ||
-      initialRectData == null
-    )
+    const { pageX, pageY } = event;
+    if (pageX < 0 || pageY < 0 || direction == null || initialRectData == null)
       return;
 
     const modifiedGrabbedCoordinates = {
       ...grabbedCoordinates,
-      finalX: clientX,
-      finalY: clientY
+      finalX: pageX,
+      finalY: pageY
     };
 
     setGrabbedCoordinates(modifiedGrabbedCoordinates);
@@ -301,14 +318,14 @@ function EditingArea() {
     const copyEls: Rect[] = [...elements];
     const index = elements.length - 1;
     const { x, y } = elements[index];
-    const { clientX, clientY } = event;
+    const { pageX, pageY } = event;
 
     let updatedRectData: RectData = {
       id: copyEls[index].id,
       x,
       y,
-      width: clientX - x,
-      height: clientY - y
+      width: pageX - x,
+      height: pageY - y
     };
     const overlapRectIds = copyEls
       .filter((el) => {
@@ -339,13 +356,17 @@ function EditingArea() {
   function handlePointerMove(event: MouseEvent) {
     if (drawing || grabbing || resizing) return;
 
-    const { clientX, clientY } = event;
+    const { pageX, pageY } = event;
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
-    const rectData = getRectByCoordinate(clientX, clientY);
+    const rectData = getRectByCoordinate(pageX, pageY - Number(topOffset));
     setRectId(rectData?.id ?? null);
 
-    const direction = getDirectionByCoordinate(rectData, clientX, clientY);
+    const direction = getDirectionByCoordinate(
+      rectData,
+      pageX,
+      pageY - Number(topOffset)
+    );
     if (direction) {
       setDirection(direction);
       canvas.style.cursor = CursorStyles[direction];
@@ -356,33 +377,41 @@ function EditingArea() {
   }
 
   return (
-    <div
-      id='editing_area'
-      style={{
-        width: size.width,
-        height: size.height,
-        position: 'relative'
-      }}
-    >
+    <>
+      <div id='header'>
+        <button disabled={collision || !elements.length}>儲存</button>
+        <button
+          onClick={() => {
+            setElements([]);
+            localStorage.removeItem('space_mgmt_areas');
+          }}
+          style={{ marginLeft: '6px' }}
+        >
+          清除
+        </button>
+      </div>
       <div
-        id='container'
-        className={positionAbsolute}
-        style={{
-          width: '100%',
-          height: '100%'
-        }}
-      />
-      <canvas
-        id='canvas'
-        width={size.width}
-        height={size.height}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-        onPointerMove={handlePointerMove}
-        className={positionAbsolute}
-      />
-    </div>
+        id='editing_area'
+        style={{ width: size.width, height: size.height, position: 'relative' }}
+      >
+        <div
+          id='container'
+          className={positionAbsolute}
+          style={{ width: '100%', height: '100%' }}
+        />
+        <canvas
+          id='canvas'
+          width={size.width}
+          height={size.height}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+          onPointerMove={handlePointerMove}
+          className={positionAbsolute}
+          style={{ background: '#000' }}
+        />
+      </div>
+    </>
   );
 }
 

@@ -17,16 +17,16 @@ export function mapToRectData(arr: Rect[] | RectData[]) {
 }
 
 export function getRectByCoordinate(
-  clientX: number,
-  clientY: number
+  pageX: number,
+  pageY: number
 ): RectData | null {
   const localData = JSON.parse(
     localStorage.getItem('space_mgmt_areas') as string
   );
   return (
     localData?.find((el: RectData) => {
-      const xRange = clientX > el.x && clientX < el.x + Math.abs(el.width);
-      const yRange = clientY > el.y && clientY < el.y + Math.abs(el.height);
+      const xRange = pageX > el.x && pageX < el.x + Math.abs(el.width);
+      const yRange = pageY > el.y && pageY < el.y + Math.abs(el.height);
       return xRange && yRange;
     }) ?? null
   );
@@ -34,8 +34,8 @@ export function getRectByCoordinate(
 
 export function getDirectionByCoordinate(
   rectData: RectData | null,
-  clientX: number,
-  clientY: number
+  pageX: number,
+  pageY: number
 ): Direction | false {
   if (rectData == null) return false;
   const { x, y, width, height } = rectData;
@@ -48,31 +48,31 @@ export function getDirectionByCoordinate(
   };
 
   // const aroundTopLeftCorner =
-  //   (clientX >= topLeft.x) && (clientX <= topLeft.x + offset) &&
-  //   (clientY >= topLeft.y) && (clientY <= topLeft.y + offset)
+  //   (pageX >= topLeft.x) && (pageX <= topLeft.x + offset) &&
+  //   (pageY >= topLeft.y) && (pageY <= topLeft.y + offset)
   // const aroundTopRightCorner =
-  //   (clientX >= topRight.x - offset) && (clientX <= topRight.x) &&
-  //   (clientY >= topRight.y) && (clientY <= topRight.y + offset)
+  //   (pageX >= topRight.x - offset) && (pageX <= topRight.x) &&
+  //   (pageY >= topRight.y) && (pageY <= topRight.y + offset)
   const aroundBottomRightCorner =
-    clientX >= bottomRight.x - offset &&
-    clientX <= bottomRight.x &&
-    clientY >= bottomRight.y - offset &&
-    clientY <= bottomRight.y;
+    pageX >= bottomRight.x - offset &&
+    pageX <= bottomRight.x &&
+    pageY >= bottomRight.y - offset &&
+    pageY <= bottomRight.y;
   // const aroundBottomLeftCorner =
-  //   (clientX >= bottomLeft.x) && (clientX <= bottomLeft.x + offset) &&
-  //   (clientY >= bottomLeft.y - offset) && (clientY <= bottomLeft.y)
+  //   (pageX >= bottomLeft.x) && (pageX <= bottomLeft.x + offset) &&
+  //   (pageY >= bottomLeft.y - offset) && (pageY <= bottomLeft.y)
   // const aroundTopHorizontalBorder =
-  //   (clientX >= topLeft.x) && (clientX <= topLeft.x + width) &&
-  //   (clientY >= topLeft.y) && (clientY <= topLeft.y + offset)
+  //   (pageX >= topLeft.x) && (pageX <= topLeft.x + width) &&
+  //   (pageY >= topLeft.y) && (pageY <= topLeft.y + offset)
   // const aroundBottomHorizontalBorder =
-  //   (clientX >= bottomLeft.x) && (clientX <= bottomLeft.x + width) &&
-  //   (clientY >= bottomLeft.y - offset) && (clientY <= bottomLeft.y)
+  //   (pageX >= bottomLeft.x) && (pageX <= bottomLeft.x + width) &&
+  //   (pageY >= bottomLeft.y - offset) && (pageY <= bottomLeft.y)
   // const aroundLeftVerticalBorder =
-  //   (clientX >= topLeft.x) && (clientX <= topLeft.x + offset) &&
-  //   (clientY >= topLeft.y) && (clientY <= topLeft.y + height)
+  //   (pageX >= topLeft.x) && (pageX <= topLeft.x + offset) &&
+  //   (pageY >= topLeft.y) && (pageY <= topLeft.y + height)
   // const aroundRightVerticalBorder =
-  //   (clientX >= topRight.x - offset) && (clientX <= topRight.x) &&
-  //   (clientY >= topRight.y) && (clientY <= topRight.y + height)
+  //   (pageX >= topRight.x - offset) && (pageX <= topRight.x) &&
+  //   (pageY >= topRight.y) && (pageY <= topRight.y + height)
 
   // if (aroundTopLeftCorner) return 'TL'
   // if (aroundTopRightCorner) return 'TR'
