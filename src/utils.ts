@@ -1,3 +1,5 @@
+import gen from './rought';
+import type { Drawable } from 'roughjs/bin/core';
 import type {
   Rect,
   RectData,
@@ -5,6 +7,27 @@ import type {
   Direction,
   Coordinate
 } from './types';
+import defaultConfig from './config.ts';
+
+export function createRect({
+  id,
+  x,
+  y,
+  width,
+  height,
+  config = defaultConfig
+}: RectData): Rect {
+  const rect: Drawable = gen.rectangle(x, y, width, height, config);
+  return { id, x, y, width, height, rect };
+}
+
+export function getTopLeftCoordinate(): number | null {
+  const editingArea = document.getElementById('editing_area'),
+    bodyRect = document.body.getBoundingClientRect(),
+    editingAreaRect = editingArea?.getBoundingClientRect() ?? null;
+  if (editingAreaRect == null) return null;
+  return editingAreaRect.top - bodyRect.top;
+}
 
 export function mapToRectData(arr: Rect[] | RectData[]) {
   return arr?.map?.((i: RectData) => ({

@@ -1,9 +1,16 @@
-import { useState, useLayoutEffect, MouseEvent } from 'react';
+import {
+  useState,
+  useLayoutEffect,
+  MouseEvent,
+  Dispatch,
+  SetStateAction
+} from 'react';
 import rough from 'roughjs';
 import { css } from '@linaria/core';
-import type { Drawable } from 'roughjs/bin/core';
 import { v4 as uuid } from 'uuid';
 import {
+  createRect,
+  getTopLeftCoordinate,
   mapToRectData,
   getRectByCoordinate,
   getDirectionByCoordinate,
@@ -28,41 +35,21 @@ const positionAbsolute = css`
 
 const size = {
   width: window.innerWidth,
-  height: 840
+  height: window.innerHeight
 };
 
-function getTopLeftCoordinate(): number | null {
-  const editingArea = document.getElementById('editing_area'),
-    bodyRect = document.body.getBoundingClientRect(),
-    editingAreaRect = editingArea?.getBoundingClientRect() ?? null;
-  if (editingAreaRect == null) return null;
-  return editingAreaRect.top - bodyRect.top;
+interface ComponentProps {
+  elements: Rect[];
+  setElements: Dispatch<SetStateAction<Rect[]>>;
+  setCollision: Dispatch<SetStateAction<boolean>>;
 }
 
-const gen = rough.generator();
-
-function createRect({
-  id,
-  x,
-  y,
-  width,
-  height,
-  config = defaultConfig
-}: RectData): Rect {
-  const rect: Drawable = gen.rectangle(x, y, width, height, config);
-  return { id, x, y, width, height, rect };
-}
-
-function EditingArea() {
+function EditingArea({ elements, setElements, setCollision }: ComponentProps) {
   const [topOffset, setTopOffset] = useState<number | null>(null);
 
   const localData: RectData[] = JSON.parse(
     localStorage.getItem('space_mgmt_areas') as string
   );
-  const initElements: Rect[] =
-    mapToRectData(localData)?.map?.((i: RectData) => createRect(i)) ?? [];
-
-  const [elements, setElements] = useState<Rect[]>(initElements);
 
   const [drawing, setDrawing] = useState(false);
   const [rectId, setRectId] = useState<string | null>(null);
@@ -83,8 +70,6 @@ function EditingArea() {
   const [resizing, setResizing] = useState(false);
   const [direction, setDirection] = useState<Direction | null>(null);
   const [initialRectData, setInitialRectData] = useState<RectData | null>(null);
-
-  const [collision, setCollision] = useState(false);
 
   useLayoutEffect(() => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -377,41 +362,26 @@ function EditingArea() {
   }
 
   return (
-    <>
-      <div id='header'>
-        <button disabled={collision || !elements.length}>儲存</button>
-        <button
-          onClick={() => {
-            setElements([]);
-            localStorage.removeItem('space_mgmt_areas');
-          }}
-          style={{ marginLeft: '6px' }}
-        >
-          清除
-        </button>
-      </div>
+    <div
+      id='editing_area'
+      style={{ width: size.width, height: size.height, position: 'relative' }}
+    >
       <div
-        id='editing_area'
-        style={{ width: size.width, height: size.height, position: 'relative' }}
-      >
-        <div
-          id='container'
-          className={positionAbsolute}
-          style={{ width: '100%', height: '100%' }}
-        />
-        <canvas
-          id='canvas'
-          width={size.width}
-          height={size.height}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-          onPointerMove={handlePointerMove}
-          className={positionAbsolute}
-          style={{ background: '#000' }}
-        />
-      </div>
-    </>
+        id='container'
+        className={positionAbsolute}
+        style={{ width: '100%', height: '100%' }}
+      />
+      <canvas
+        id='canvas'
+        width={size.width}
+        height={size.height}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        onPointerMove={handlePointerMove}
+        className={positionAbsolute}
+      />
+    </div>
   );
 }
 
