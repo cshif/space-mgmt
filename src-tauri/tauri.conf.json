@@ -7,7 +7,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "demo-space-mgmt",
+    "productName": "space-mgmt",
     "version": "0.1.0"
   },
   "tauri": {
@@ -58,7 +58,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "demo-space-mgmt",
+        "title": "space-mgmt",
         "width": 800
       }
     ]
