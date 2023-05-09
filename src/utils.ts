@@ -21,7 +21,7 @@ export function createRect({
   return { id, x, y, width, height, rect };
 }
 
-export function getTopLeftCoordinate(): number | null {
+export function getTopOffset(): number | null {
   const editingArea = document.getElementById('editing_area'),
     bodyRect = document.body.getBoundingClientRect(),
     editingAreaRect = editingArea?.getBoundingClientRect() ?? null;

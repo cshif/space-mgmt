@@ -10,7 +10,7 @@ import { css } from '@linaria/core';
 import { v4 as uuid } from 'uuid';
 import {
   createRect,
-  getTopLeftCoordinate,
+  getTopOffset,
   mapToRectData,
   getRectByCoordinate,
   getDirectionByCoordinate,
@@ -102,7 +102,7 @@ function EditingArea({ elements, setElements, setCollision }: ComponentProps) {
   }, [elements]);
 
   useLayoutEffect(() => {
-    const offset = getTopLeftCoordinate();
+    const offset = getTopOffset();
     setTopOffset(offset);
   }, [topOffset]);
 
