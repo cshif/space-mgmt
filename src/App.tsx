@@ -14,6 +14,8 @@ function App() {
     mapToRectData(localData)?.map?.((i: RectData) => createRect(i)) ?? [];
   const [elements, setElements] = useState<Rect[]>(initElements);
 
+  const [editable, setEditable] = useState(false);
+
   const [collision, setCollision] = useState(false);
 
   return (
@@ -21,11 +23,14 @@ function App() {
       <SNavbar
         elements={elements}
         setElements={setElements}
+        editable={editable}
+        setEditable={setEditable}
         collision={collision}
       />
       <EditingArea
         elements={elements}
         setElements={setElements}
+        editable={editable}
         setCollision={setCollision}
       />
     </>

@@ -1,9 +1,10 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { css } from '@linaria/core';
 import RBContainer from 'react-bootstrap/Container';
 import RBNavbar from 'react-bootstrap/Navbar';
 import { SIconButton, SVerticalSeparator } from '../shared';
 import { Rect } from '../../types.ts';
+import { swapContainerAndCanvas } from '../../utils';
 
 const rb_navbar = css`
   display: flex;
@@ -34,12 +35,18 @@ const title = css`
 interface ComponentProps {
   elements: Rect[];
   setElements: Dispatch<SetStateAction<Rect[]>>;
+  editable: boolean;
+  setEditable: Dispatch<SetStateAction<boolean>>;
   collision: boolean;
 }
 
-function SNavbar({ elements, setElements, collision }: ComponentProps) {
-  const [editable, setEditable] = useState(false);
-
+function SNavbar({
+  elements,
+  setElements,
+  editable,
+  setEditable,
+  collision
+}: ComponentProps) {
   return (
     <RBNavbar fixed='top' className={rb_navbar}>
       <RBContainer className={rb_container}>
@@ -81,6 +88,7 @@ function SNavbar({ elements, setElements, collision }: ComponentProps) {
             onClick={() => {
               console.log('儲存');
               setEditable(false);
+              swapContainerAndCanvas(false);
             }}
           />
         </RBContainer>
@@ -100,6 +108,7 @@ function SNavbar({ elements, setElements, collision }: ComponentProps) {
             onClick={() => {
               console.log('編輯');
               setEditable(true);
+              swapContainerAndCanvas(true);
             }}
           />
         </RBContainer>

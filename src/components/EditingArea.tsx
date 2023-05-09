@@ -41,10 +41,16 @@ const size = {
 interface ComponentProps {
   elements: Rect[];
   setElements: Dispatch<SetStateAction<Rect[]>>;
+  editable: boolean;
   setCollision: Dispatch<SetStateAction<boolean>>;
 }
 
-function EditingArea({ elements, setElements, setCollision }: ComponentProps) {
+function EditingArea({
+  elements,
+  setElements,
+  editable,
+  setCollision
+}: ComponentProps) {
   const [topOffset, setTopOffset] = useState<number | null>(null);
 
   const localData: RectData[] = JSON.parse(
@@ -366,11 +372,6 @@ function EditingArea({ elements, setElements, setCollision }: ComponentProps) {
       id='editing_area'
       style={{ width: size.width, height: size.height, position: 'relative' }}
     >
-      <div
-        id='container'
-        className={positionAbsolute}
-        style={{ width: '100%', height: '100%' }}
-      />
       <canvas
         id='canvas'
         width={size.width}
@@ -380,6 +381,11 @@ function EditingArea({ elements, setElements, setCollision }: ComponentProps) {
         onMouseMove={handleMouseMove}
         onPointerMove={handlePointerMove}
         className={positionAbsolute}
+      />
+      <div
+        id='container'
+        className={positionAbsolute}
+        style={{ width: '100%', height: '100%' }}
       />
     </div>
   );

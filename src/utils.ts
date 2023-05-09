@@ -161,3 +161,17 @@ export function editingRectOverlapWithOthers(
     ? fixedRect.id
     : false;
 }
+
+export function swapContainerAndCanvas(editable: boolean): void {
+  const editingAreaNode = document.getElementById(
+    'editing_area'
+  ) as HTMLElement;
+  const containerNode = document.getElementById('container') as HTMLElement;
+  const canvasNode = document.getElementById('canvas') as HTMLElement;
+
+  if (editable) {
+    editingAreaNode.insertBefore(containerNode, canvasNode);
+  } else {
+    editingAreaNode.insertBefore(canvasNode, containerNode);
+  }
+}
