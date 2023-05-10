@@ -1,5 +1,4 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useState } from 'react';
 import SNavbar from './components/layout/SNavbar';
 import EditingArea from './components/EditingArea';

@@ -1,10 +1,11 @@
-import type { MouseEventHandler } from 'react';
+import type { ReactElement, MouseEventHandler } from 'react';
+import { IconContext } from 'react-icons';
 import RBButton from 'react-bootstrap/Button';
 import type { ButtonVariant } from 'react-bootstrap/types';
 
 interface ComponentProps {
   variant?: ButtonVariant;
-  iconName: string;
+  iconName: ReactElement;
   iconColor?: string;
   iconSize?: string;
   disabled?: boolean;
@@ -22,11 +23,19 @@ function SIconButton(props: ComponentProps) {
   } = props;
 
   return (
-    <RBButton onClick={onClick} variant={variant} disabled={disabled}>
-      <i
-        className={`bi bi-${iconName}`}
-        style={{ color: iconColor, fontSize: iconSize }}
-      />
+    <RBButton
+      onClick={onClick}
+      variant={variant}
+      disabled={disabled}
+      style={{
+        padding: '.25rem',
+        display: 'flex',
+        alignItems: 'center'
+      }}
+    >
+      <IconContext.Provider value={{ color: iconColor, size: iconSize }}>
+        {iconName}
+      </IconContext.Provider>
     </RBButton>
   );
 }

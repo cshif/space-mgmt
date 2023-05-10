@@ -5,6 +5,12 @@ import RBNavbar from 'react-bootstrap/Navbar';
 import { SIconButton, SVerticalSeparator } from '../shared';
 import { Rect } from '../../types.ts';
 import { swapContainerAndCanvas } from '../../utils';
+import { RiSettings2Line } from 'react-icons/ri';
+import { RiFileUploadLine } from 'react-icons/ri';
+import { RiEraserLine } from 'react-icons/ri';
+import { RiSave3Line } from 'react-icons/ri';
+import { RiFileDownloadLine } from 'react-icons/ri';
+import { RiEditLine } from 'react-icons/ri';
 
 const rb_navbar = css`
   display: flex;
@@ -56,7 +62,7 @@ function SNavbar({
         <SVerticalSeparator />
         <SIconButton
           variant='light'
-          iconName='gear'
+          iconName={<RiSettings2Line />}
           iconSize='1.5rem'
           onClick={() => console.log('設定')}
         />
@@ -65,14 +71,14 @@ function SNavbar({
         <RBContainer className={rb_container}>
           <SIconButton
             variant='light'
-            iconName='file-earmark-plus'
+            iconName={<RiFileUploadLine />}
             iconSize='1.5rem'
             onClick={() => console.log('上傳圖片')}
           />
           <SVerticalSeparator />
           <SIconButton
             variant='light'
-            iconName='eraser'
+            iconName={<RiEraserLine />}
             iconSize='1.5rem'
             onClick={() => {
               console.log('清除');
@@ -82,7 +88,7 @@ function SNavbar({
           />
           <SIconButton
             variant='light'
-            iconName='save'
+            iconName={<RiSave3Line />}
             iconSize='1.5rem'
             disabled={collision || !elements.length}
             onClick={() => {
@@ -96,14 +102,14 @@ function SNavbar({
         <RBContainer className={rb_container}>
           <SIconButton
             variant='light'
-            iconName='download'
+            iconName={<RiFileDownloadLine />}
             iconSize='1.5rem'
             onClick={() => console.log('下載')}
           />
           <SVerticalSeparator />
           <SIconButton
             variant='light'
-            iconName='pen'
+            iconName={<RiEditLine />}
             iconSize='1.5rem'
             onClick={() => {
               console.log('編輯');
