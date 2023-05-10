@@ -1,4 +1,4 @@
-import type { ReactElement, MouseEventHandler } from 'react';
+import type { ReactElement, MouseEventHandler, CSSProperties } from 'react';
 import { IconContext } from 'react-icons';
 import RBButton from 'react-bootstrap/Button';
 import type { ButtonVariant } from 'react-bootstrap/types';
@@ -8,6 +8,7 @@ interface ComponentProps {
   iconName: ReactElement;
   iconColor?: string;
   iconSize?: string;
+  style?: CSSProperties;
   disabled?: boolean;
   onClick?: MouseEventHandler;
 }
@@ -18,6 +19,7 @@ function SIconButton(props: ComponentProps) {
     iconName,
     iconColor = '#333',
     iconSize = '1rem',
+    style = {},
     disabled = false,
     onClick
   } = props;
@@ -30,7 +32,8 @@ function SIconButton(props: ComponentProps) {
       style={{
         padding: '.25rem',
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        ...style
       }}
     >
       <IconContext.Provider value={{ color: iconColor, size: iconSize }}>
