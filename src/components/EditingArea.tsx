@@ -26,6 +26,7 @@ import {
   Coordinate
 } from '../types';
 import defaultConfig, { errorColor } from '../config';
+import Rectangle from './Rectangle';
 
 const positionAbsolute = css`
   position: absolute;
@@ -86,24 +87,9 @@ function EditingArea({
     const rc = rough.canvas(canvas as HTMLCanvasElement, {
       options: defaultConfig
     });
-    const rootContainer = document.getElementById(
-      'container'
-    ) as HTMLDivElement;
-    rootContainer.innerHTML = '';
 
     elements.forEach((el: Rect) => {
       rc.draw(el.rect);
-
-      const div = document.createElement('div');
-      div.setAttribute('ref', el.id);
-      div.setAttribute('draggable', 'true');
-      div.style.position = 'absolute';
-      div.style.top = `${el.height > 0 ? el.y : el.y + el.height}px`;
-      div.style.left = `${el.width > 0 ? el.x : el.x + el.width}px`;
-      div.style.width = `${Math.abs(el.width)}px`;
-      div.style.height = `${Math.abs(el.height)}px`;
-      div.style.cursor = 'grab';
-      rootContainer.append(div);
     });
   }, [elements]);
 
@@ -215,6 +201,9 @@ function EditingArea({
   }
 
   function grab(event: MouseEvent) {
+    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    canvas.style.cursor = 'grabbing';
+
     const { pageX, pageY } = event;
     if (pageX < 0 || pageY < 0) return;
 
@@ -386,7 +375,11 @@ function EditingArea({
         id='container'
         className={positionAbsolute}
         style={{ width: '100%', height: '100%' }}
-      />
+      >
+        {elements.map((el: Rect) => (
+          <Rectangle rect={el} editable={editable} key={el.id} />
+        ))}
+      </div>
     </div>
   );
 }
