@@ -3,7 +3,7 @@ import RBListGroup from 'react-bootstrap/ListGroup';
 import { SIconButton } from './shared';
 import { FiMoreVertical } from 'react-icons/fi';
 import type { Rect } from '../types';
-import { errorColor } from '../config';
+import { color } from '../config';
 
 interface ComponentProps {
   rect: Rect;
@@ -39,11 +39,14 @@ function Rectangle(props: ComponentProps) {
         left: `${width > 0 ? x : x + width}px`,
         width: `${Math.abs(width)}px`,
         height: `${Math.abs(height)}px`,
+        background: `${color.blueprint}1A`,
         cursor: `${editable ? 'grab' : 'pointer'}`
       }}
       onMouseOver={(e: MouseEvent) => {
         if (!editable) {
-          (e.target as HTMLDivElement).style.outline = '1px solid blue';
+          (
+            e.target as HTMLDivElement
+          ).style.outline = `1px solid ${color.blueprint}`;
         }
       }}
       onMouseOut={(e: MouseEvent) => {
@@ -89,7 +92,7 @@ function Rectangle(props: ComponentProps) {
                 <RBListGroup.Item
                   action
                   onClick={() => console.log('刪除')}
-                  style={{ color: errorColor }}
+                  style={{ color: color.error }}
                 >
                   刪除
                 </RBListGroup.Item>

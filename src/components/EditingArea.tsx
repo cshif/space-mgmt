@@ -25,7 +25,7 @@ import {
   Direction,
   Coordinate
 } from '../types';
-import defaultConfig, { errorColor } from '../config';
+import defaultConfig, { color } from '../config';
 import Rectangle from './Rectangle';
 
 const positionAbsolute = css`
@@ -232,7 +232,7 @@ function EditingArea({
       setCollision(true);
       updatedRectData = {
         ...updatedRectData,
-        config: { ...defaultConfig, fill: errorColor, stroke: errorColor }
+        config: { ...defaultConfig, fill: color.error, stroke: color.error }
       };
     } else {
       setCollision(false);
@@ -278,7 +278,7 @@ function EditingArea({
       setCollision(true);
       newRectData = {
         ...newRectData,
-        config: { ...defaultConfig, fill: errorColor, stroke: errorColor }
+        config: { ...defaultConfig, fill: color.error, stroke: color.error }
       };
     } else {
       setCollision(false);
@@ -319,7 +319,7 @@ function EditingArea({
       setCollision(true);
       updatedRectData = {
         ...updatedRectData,
-        config: { ...defaultConfig, fill: errorColor, stroke: errorColor }
+        config: { ...defaultConfig, fill: color.error, stroke: color.error }
       };
     } else {
       setCollision(false);
