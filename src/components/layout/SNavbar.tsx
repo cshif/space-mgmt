@@ -1,8 +1,9 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { css } from '@linaria/core';
 import RBContainer from 'react-bootstrap/Container';
 import RBNavbar from 'react-bootstrap/Navbar';
 import { SIconButton, SVerticalSeparator } from '../shared';
+import ImportFloorPlanImageDialog from '../ImportFloorPlanImageDialog';
 import { Rect } from '../../types.ts';
 import { swapContainerAndCanvas } from '../../utils';
 import { RiSettings2Line } from 'react-icons/ri';
@@ -53,6 +54,9 @@ function SNavbar({
   setEditable,
   collision
 }: ComponentProps) {
+  const [showImportFloorPlanImageDialog, setShowImportFloorPlanImageDialog] =
+    useState(false);
+
   return (
     <RBNavbar fixed='top' className={rb_navbar}>
       <RBContainer className={rb_container}>
@@ -73,7 +77,9 @@ function SNavbar({
             variant='light'
             iconName={<RiFileUploadLine />}
             iconSize='1.5rem'
-            onClick={() => console.log('上傳圖片')}
+            onClick={() => {
+              setShowImportFloorPlanImageDialog(true);
+            }}
           />
           <SVerticalSeparator />
           <SIconButton
@@ -119,6 +125,10 @@ function SNavbar({
           />
         </RBContainer>
       )}
+      <ImportFloorPlanImageDialog
+        show={showImportFloorPlanImageDialog}
+        onClose={() => setShowImportFloorPlanImageDialog(false)}
+      />
     </RBNavbar>
   );
 }

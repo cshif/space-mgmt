@@ -376,6 +376,30 @@ function EditingArea({
         className={positionAbsolute}
         style={{ width: '100%', height: '100%' }}
       >
+        <div
+          style={{
+            width: size.width,
+            height: size.height
+          }}
+        >
+          <img
+            id='imported-floor-plan-image'
+            src=''
+            alt='floor-plan-image'
+            style={{
+              height: '80%',
+              padding: '2rem',
+              border: '1px solid #333',
+              borderRadius: '1rem',
+              background: 'white',
+              display: 'none',
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
+            }}
+          />
+        </div>
         {elements.map((el: Rect) => (
           <Rectangle rect={el} editable={editable} key={el.id} />
         ))}
