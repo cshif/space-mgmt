@@ -15,7 +15,8 @@ import {
   getRectByCoordinate,
   getDirectionByCoordinate,
   getUpdatedRectData,
-  editingRectOverlapWithOthers
+  editingRectOverlapWithOthers,
+  swapContainerAndCanvas
 } from '../utils';
 import {
   Rect,
@@ -28,6 +29,9 @@ import {
 } from '../types';
 import defaultConfig, { color } from '../config';
 import Rectangle from './Rectangle';
+import { SIconButton } from './shared';
+import { IoAddCircleOutline } from 'react-icons/io5';
+import ImportFloorPlanImageDialog from './ImportFloorPlanImageDialog';
 
 interface ComponentProps {
   loaded: boolean;
@@ -35,6 +39,7 @@ interface ComponentProps {
   elements: Rect[];
   setElements: Dispatch<SetStateAction<Rect[]>>;
   editable: boolean;
+  setEditable: Dispatch<SetStateAction<boolean>>;
   setCollision: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -44,6 +49,7 @@ function EditingArea({
   elements,
   setElements,
   editable,
+  setEditable,
   setCollision
 }: ComponentProps) {
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -74,6 +80,9 @@ function EditingArea({
   const [resizing, setResizing] = useState(false);
   const [direction, setDirection] = useState<Direction | null>(null);
   const [initialRectData, setInitialRectData] = useState<RectData | null>(null);
+
+  const [showImportFloorPlanImageDialog, setShowImportFloorPlanImageDialog] =
+    useState(false);
 
   useLayoutEffect(() => {
     if (!loaded) return;
@@ -433,6 +442,33 @@ function EditingArea({
             ))}
         </div>
       </div>
+      {!loaded && (
+        <div
+          style={{
+            width: '100vw',
+            height: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <SIconButton
+            iconName={<IoAddCircleOutline />}
+            iconSize='4rem'
+            variant='light'
+            style={{ borderRadius: '50%' }}
+            onClick={() => {
+              setEditable(true);
+              swapContainerAndCanvas(true);
+              setShowImportFloorPlanImageDialog(true);
+            }}
+          />
+          <ImportFloorPlanImageDialog
+            show={showImportFloorPlanImageDialog}
+            onClose={() => setShowImportFloorPlanImageDialog(false)}
+          />
+        </div>
+      )}
     </div>
   );
 }

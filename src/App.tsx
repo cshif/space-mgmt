@@ -35,6 +35,7 @@ function App() {
         elements={elements}
         setElements={setElements}
         editable={editable}
+        setEditable={setEditable}
         setCollision={setCollision}
       />
     </>
