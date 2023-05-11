@@ -23,8 +23,6 @@ function ImportFloorPlanImageDialog(props: ComponentProps) {
       img.onload?.(() => {
         URL.revokeObjectURL(img.src);
       });
-      const rect = img.getBoundingClientRect();
-      console.log(rect);
     }
     props.onClose();
   }
