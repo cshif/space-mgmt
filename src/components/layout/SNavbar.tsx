@@ -40,6 +40,7 @@ const title = css`
 `;
 
 interface ComponentProps {
+  setLoaded: Dispatch<SetStateAction<boolean>>;
   elements: Rect[];
   setElements: Dispatch<SetStateAction<Rect[]>>;
   editable: boolean;
@@ -48,6 +49,7 @@ interface ComponentProps {
 }
 
 function SNavbar({
+  setLoaded,
   elements,
   setElements,
   editable,
@@ -90,6 +92,14 @@ function SNavbar({
               console.log('清除');
               setElements([]);
               localStorage.removeItem('space_mgmt_areas');
+
+              setLoaded(false);
+
+              const canvas = document.getElementById(
+                'canvas'
+              ) as HTMLCanvasElement;
+              canvas.width = 0;
+              canvas.height = 0;
             }}
           />
           <SIconButton

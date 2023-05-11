@@ -40,3 +40,8 @@ export enum CursorStyles {
 export type Direction = keyof typeof CursorStyles;
 export type CursorValue = `${CursorStyles}`;
 export type CursorStyle = CursorValue | 'crosshair' | 'grab';
+
+export interface Offset {
+  top: number;
+  left: number;
+}

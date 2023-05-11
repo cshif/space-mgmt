@@ -1,16 +1,16 @@
 import {
   useState,
   useLayoutEffect,
+  useRef,
   MouseEvent,
   Dispatch,
   SetStateAction
 } from 'react';
 import rough from 'roughjs';
-import { css } from '@linaria/core';
 import { v4 as uuid } from 'uuid';
 import {
   createRect,
-  getTopOffset,
+  getEditingAreaOffset,
   mapToRectData,
   getRectByCoordinate,
   getDirectionByCoordinate,
@@ -23,23 +23,15 @@ import {
   GrabbedOrdinates,
   CursorStyles,
   Direction,
-  Coordinate
+  Coordinate,
+  Offset
 } from '../types';
 import defaultConfig, { color } from '../config';
 import Rectangle from './Rectangle';
 
-const positionAbsolute = css`
-  position: absolute;
-  top: 0;
-  left: 0;
-`;
-
-const size = {
-  width: window.innerWidth,
-  height: window.innerHeight
-};
-
 interface ComponentProps {
+  loaded: boolean;
+  setLoaded: Dispatch<SetStateAction<boolean>>;
   elements: Rect[];
   setElements: Dispatch<SetStateAction<Rect[]>>;
   editable: boolean;
@@ -47,12 +39,17 @@ interface ComponentProps {
 }
 
 function EditingArea({
+  loaded,
+  setLoaded,
   elements,
   setElements,
   editable,
   setCollision
 }: ComponentProps) {
-  const [topOffset, setTopOffset] = useState<number | null>(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  const offset = useRef<Offset>({ top: 0, left: 0 });
+  const coord = useRef<Coordinate>({ x: 0, y: 0 });
 
   const localData: RectData[] = JSON.parse(
     localStorage.getItem('space_mgmt_areas') as string
@@ -79,7 +76,23 @@ function EditingArea({
   const [initialRectData, setInitialRectData] = useState<RectData | null>(null);
 
   useLayoutEffect(() => {
+    if (!loaded) return;
+
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+
+    if (loaded) {
+      const img = document.getElementById(
+        'imported-floor-plan-image'
+      ) as HTMLImageElement;
+      const imgRect = img.getBoundingClientRect();
+      canvas.width = imgRect.width;
+      canvas.height = imgRect.height;
+      setSize({ width: imgRect.width, height: imgRect.height });
+
+      const { top, left } = getEditingAreaOffset();
+      offset.current = { top, left };
+      coord.current = { x: left, y: top };
+    }
 
     const ctx = canvas.getContext('2d');
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
@@ -91,30 +104,24 @@ function EditingArea({
     elements.forEach((el: Rect) => {
       rc.draw(el.rect);
     });
-  }, [elements]);
-
-  useLayoutEffect(() => {
-    const offset = getTopOffset();
-    setTopOffset(offset);
-  }, [topOffset]);
+  }, [loaded, elements]);
 
   function handleMouseDown(event: MouseEvent) {
-    const { pageX, pageY } = event;
     const isHoverOnRect = !!getRectByCoordinate(
-      pageX,
-      pageY - Number(topOffset)
+      coord.current.x,
+      coord.current.y
     )?.id;
 
     if (isHoverOnRect) {
       startDragging(event);
       return;
     }
-    startDrawing(event);
+    startDrawing();
   }
 
   function startDragging(event: MouseEvent) {
     const { pageX, pageY } = event;
-    const rectData = getRectByCoordinate(pageX, pageY - Number(topOffset));
+    const rectData = getRectByCoordinate(coord.current.x, coord.current.y);
 
     if (rectData == null) return;
 
@@ -128,8 +135,8 @@ function EditingArea({
 
     const direction = getDirectionByCoordinate(
       rectData,
-      pageX,
-      pageY - Number(topOffset)
+      coord.current.x,
+      coord.current.y
     );
     if (direction) {
       setResizing(true);
@@ -138,13 +145,13 @@ function EditingArea({
     }
   }
 
-  function startDrawing(event: MouseEvent) {
+  function startDrawing() {
     setDrawing(true);
 
     const newEl = createRect({
       id: `ref_${uuid()}`,
-      x: event.pageX,
-      y: event.pageY,
+      x: coord.current.x,
+      y: coord.current.y,
       width: 0,
       height: 0
     });
@@ -186,8 +193,13 @@ function EditingArea({
   }
 
   function handleMouseMove(event: MouseEvent) {
+    coord.current = {
+      x: event.pageX - offset.current.left,
+      y: event.pageY - offset.current.top
+    };
+
     if (drawing) {
-      draw(event);
+      draw();
       return;
     }
     if (grabbing) {
@@ -195,7 +207,7 @@ function EditingArea({
       return;
     }
     if (resizing) {
-      resize(event);
+      resize();
       return;
     }
   }
@@ -205,12 +217,12 @@ function EditingArea({
     canvas.style.cursor = 'grabbing';
 
     const { pageX, pageY } = event;
-    if (pageX < 0 || pageY < 0) return;
+    if (coord.current.x < 0 || coord.current.y < 0) return;
 
     setGrabbedCoordinates({
       ...grabbedCoordinates,
-      finalX: pageX,
-      finalY: pageY
+      finalX: coord.current.x,
+      finalY: coord.current.y
     });
 
     const copyEls: Rect[] = [...elements];
@@ -246,15 +258,19 @@ function EditingArea({
     );
   }
 
-  function resize(event: MouseEvent) {
-    const { pageX, pageY } = event;
-    if (pageX < 0 || pageY < 0 || direction == null || initialRectData == null)
+  function resize() {
+    if (
+      coord.current.x < 0 ||
+      coord.current.y < 0 ||
+      direction == null ||
+      initialRectData == null
+    )
       return;
 
     const modifiedGrabbedCoordinates = {
       ...grabbedCoordinates,
-      finalX: pageX,
-      finalY: pageY
+      finalX: coord.current.x,
+      finalY: coord.current.y
     };
 
     setGrabbedCoordinates(modifiedGrabbedCoordinates);
@@ -292,20 +308,19 @@ function EditingArea({
     );
   }
 
-  function draw(event: MouseEvent) {
+  function draw() {
     if (!drawing || rectId) return;
 
     const copyEls: Rect[] = [...elements];
     const index = elements.length - 1;
     const { x, y } = elements[index];
-    const { pageX, pageY } = event;
 
     let updatedRectData: RectData = {
       id: copyEls[index].id,
       x,
       y,
-      width: pageX - x,
-      height: pageY - y
+      width: coord.current.x - x,
+      height: coord.current.y - y
     };
     const overlapRectIds = copyEls
       .filter((el) => {
@@ -333,19 +348,18 @@ function EditingArea({
     );
   }
 
-  function handlePointerMove(event: MouseEvent) {
+  function handlePointerMove() {
     if (drawing || grabbing || resizing) return;
 
-    const { pageX, pageY } = event;
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
-    const rectData = getRectByCoordinate(pageX, pageY - Number(topOffset));
+    const rectData = getRectByCoordinate(coord.current.x, coord.current.y);
     setRectId(rectData?.id ?? null);
 
     const direction = getDirectionByCoordinate(
       rectData,
-      pageX,
-      pageY - Number(topOffset)
+      coord.current.x,
+      coord.current.y
     );
     if (direction) {
       setDirection(direction);
@@ -358,51 +372,66 @@ function EditingArea({
 
   return (
     <div
-      id='editing_area'
-      style={{ width: size.width, height: size.height, position: 'relative' }}
+      style={
+        loaded
+          ? {
+              padding: '2rem',
+              border: '1px solid #333',
+              borderRadius: '1rem',
+              background: 'white'
+            }
+          : {}
+      }
     >
-      <canvas
-        id='canvas'
-        width={size.width}
-        height={size.height}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-        onPointerMove={handlePointerMove}
-        className={positionAbsolute}
-      />
       <div
-        id='container'
-        className={positionAbsolute}
-        style={{ width: '100%', height: '100%' }}
+        id='editing_area'
+        style={{
+          position: 'relative',
+          width: 'fit-content',
+          height: 'fit-content'
+        }}
       >
-        <div
-          style={{
-            width: size.width,
-            height: size.height
-          }}
-        >
+        <div id='img-container'>
           <img
             id='imported-floor-plan-image'
             src=''
             alt='floor-plan-image'
-            style={{
-              height: '80%',
-              padding: '2rem',
-              border: '1px solid #333',
-              borderRadius: '1rem',
-              background: 'white',
-              display: 'none',
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)'
-            }}
+            onLoad={() => setLoaded(true)}
+            style={{ display: loaded ? 'block' : 'none' }}
           />
         </div>
-        {elements.map((el: Rect) => (
-          <Rectangle rect={el} editable={editable} key={el.id} />
-        ))}
+        <canvas
+          id='canvas'
+          width={size.width}
+          height={size.height}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+          onPointerMove={handlePointerMove}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            display: 'block'
+          }}
+        />
+        <div
+          id='container'
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          {loaded &&
+            elements.map((el: Rect) => (
+              <Rectangle rect={el} editable={editable} key={el.id} />
+            ))}
+        </div>
       </div>
     </div>
   );

@@ -5,7 +5,8 @@ import type {
   RectData,
   GrabbedOrdinates,
   Direction,
-  Coordinate
+  Coordinate,
+  Offset
 } from './types';
 import defaultConfig from './config.ts';
 
@@ -21,12 +22,15 @@ export function createRect({
   return { id, x, y, width, height, rect };
 }
 
-export function getTopOffset(): number | null {
+export function getEditingAreaOffset(): Offset {
   const editingArea = document.getElementById('editing_area'),
     bodyRect = document.body.getBoundingClientRect(),
     editingAreaRect = editingArea?.getBoundingClientRect() ?? null;
-  if (editingAreaRect == null) return null;
-  return editingAreaRect.top - bodyRect.top;
+  if (editingAreaRect == null) return { top: 0, left: 0 };
+  return {
+    top: editingAreaRect.top - bodyRect.top,
+    left: editingAreaRect.left - bodyRect.left
+  };
 }
 
 export function mapToRectData(arr: Rect[] | RectData[]) {

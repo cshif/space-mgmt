@@ -6,6 +6,8 @@ import { createRect, mapToRectData } from './utils.ts';
 import { Rect, RectData } from './types.ts';
 
 function App() {
+  const [loaded, setLoaded] = useState(false);
+
   const localData: RectData[] = JSON.parse(
     localStorage.getItem('space_mgmt_areas') as string
   );
@@ -20,6 +22,7 @@ function App() {
   return (
     <>
       <SNavbar
+        setLoaded={setLoaded}
         elements={elements}
         setElements={setElements}
         editable={editable}
@@ -27,6 +30,8 @@ function App() {
         collision={collision}
       />
       <EditingArea
+        loaded={loaded}
+        setLoaded={setLoaded}
         elements={elements}
         setElements={setElements}
         editable={editable}
