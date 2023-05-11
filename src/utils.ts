@@ -44,16 +44,16 @@ export function mapToRectData(arr: Rect[] | RectData[]) {
 }
 
 export function getRectByCoordinate(
-  pageX: number,
-  pageY: number
+  coordX: number,
+  coordY: number
 ): RectData | null {
   const localData = JSON.parse(
     localStorage.getItem('space_mgmt_areas') as string
   );
   return (
     localData?.find((el: RectData) => {
-      const xRange = pageX > el.x && pageX < el.x + Math.abs(el.width);
-      const yRange = pageY > el.y && pageY < el.y + Math.abs(el.height);
+      const xRange = coordX > el.x && coordX < el.x + Math.abs(el.width);
+      const yRange = coordY > el.y && coordY < el.y + Math.abs(el.height);
       return xRange && yRange;
     }) ?? null
   );
