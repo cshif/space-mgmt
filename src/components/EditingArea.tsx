@@ -400,13 +400,17 @@ function EditingArea({
           height: 'fit-content'
         }}
       >
-        <div id='img-container'>
+        <div id='img-container' style={{ maxWidth: '90vw', maxHeight: '90vh' }}>
           <img
             id='imported-floor-plan-image'
             src=''
             alt='floor-plan-image'
             onLoad={() => setLoaded(true)}
-            style={{ display: loaded ? 'block' : 'none' }}
+            style={{
+              display: loaded ? 'block' : 'none',
+              maxWidth: '80vw',
+              maxHeight: '80vh'
+            }}
           />
         </div>
         <canvas
