@@ -4,7 +4,7 @@ import RBContainer from 'react-bootstrap/Container';
 import RBNavbar from 'react-bootstrap/Navbar';
 import { SIconButton, SVerticalSeparator } from '../shared';
 import ImportFloorPlanImageDialog from '../ImportFloorPlanImageDialog';
-import { Rect } from '../../types.ts';
+import { Rect } from '../../types';
 import { swapContainerAndCanvas } from '../../utils';
 import { RiSettings2Line } from 'react-icons/ri';
 import { RiFileUploadLine } from 'react-icons/ri';

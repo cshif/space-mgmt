@@ -2,8 +2,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react';
 import SNavbar from './components/layout/SNavbar';
 import EditingArea from './components/EditingArea';
-import { createRect, mapToRectData } from './utils.ts';
-import { Rect, RectData } from './types.ts';
+import { createRect, mapToRectData } from './utils';
+import { Rect, RectData } from './types';
 
 function App() {
   const [loaded, setLoaded] = useState(false);
