@@ -58,7 +58,7 @@ function EditingArea({
   const coord = useRef<Coordinate>({ x: 0, y: 0 });
 
   const localData: RectData[] = JSON.parse(
-    localStorage.getItem('space_mgmt_areas') as string
+    localStorage.getItem('space_mgmt_temp_areas') as string
   );
 
   const [drawing, setDrawing] = useState(false);
@@ -169,7 +169,7 @@ function EditingArea({
     const newEls: Rect[] = [...elements, newEl];
     setElements(newEls);
     localStorage.setItem(
-      'space_mgmt_areas',
+      'space_mgmt_temp_areas',
       JSON.stringify(mapToRectData(newEls))
     );
   }
@@ -198,7 +198,7 @@ function EditingArea({
     });
     setElements(filteredEls);
     localStorage.setItem(
-      'space_mgmt_areas',
+      'space_mgmt_temp_areas',
       JSON.stringify(mapToRectData(filteredEls))
     );
   }
@@ -264,7 +264,7 @@ function EditingArea({
     copyEls[rectIndex] = createRect(updatedRectData);
     setElements(copyEls);
     localStorage.setItem(
-      'space_mgmt_areas',
+      'space_mgmt_temp_areas',
       JSON.stringify(mapToRectData(copyEls))
     );
   }
@@ -314,7 +314,7 @@ function EditingArea({
     copyEls[rectIndex] = createRect(newRectData);
     setElements(copyEls);
     localStorage.setItem(
-      'space_mgmt_areas',
+      'space_mgmt_temp_areas',
       JSON.stringify(mapToRectData(copyEls))
     );
   }
@@ -354,7 +354,7 @@ function EditingArea({
     copyEls[index] = createRect(updatedRectData);
     setElements(copyEls);
     localStorage.setItem(
-      'space_mgmt_areas',
+      'space_mgmt_temp_areas',
       JSON.stringify(mapToRectData(copyEls))
     );
   }

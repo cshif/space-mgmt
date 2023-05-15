@@ -108,7 +108,7 @@ function Rectangle(props: ComponentProps) {
                     );
                     setElements(newEls);
                     localStorage.setItem(
-                      'space_mgmt_areas',
+                      'space_mgmt_temp_areas',
                       JSON.stringify(mapToRectData(newEls))
                     );
                   }}
