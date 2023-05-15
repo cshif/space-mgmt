@@ -43,10 +43,29 @@ function ImportFloorPlanImageDialog(props: ComponentProps) {
               const input = document.getElementById(
                 'floor-plan-image'
               ) as HTMLInputElement | null;
-              if (input && input.files) setFile(input.files[0]);
+              if (input && input.files) {
+                setFile(input.files[0]);
+                const previewImg = document.getElementById(
+                  'imported-image-preview'
+                ) as HTMLImageElement;
+                const fileReader = new FileReader();
+                fileReader.addEventListener('load', () => {
+                  previewImg.src = fileReader.result as string;
+                });
+                fileReader.readAsDataURL(input.files[0]);
+                previewImg.style.display = 'block';
+              }
             }}
           />
         </RBForm.Group>
+        <div>
+          <img
+            src=''
+            id='imported-image-preview'
+            alt='floor-plan-image'
+            style={{ display: 'none', width: '100%', padding: '1rem' }}
+          />
+        </div>
       </RBModal.Body>
       <RBModal.Footer>
         <RBButton onClick={handleImport}>匯入</RBButton>
