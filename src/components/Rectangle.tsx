@@ -1,19 +1,30 @@
-import { MouseEvent, useState, useEffect } from 'react';
+import {
+  MouseEvent,
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction
+} from 'react';
 import RBListGroup from 'react-bootstrap/ListGroup';
 import { SIconButton } from './shared';
 import { FiMoreVertical } from 'react-icons/fi';
 import type { Rect } from '../types';
 import { color } from '../config';
+import { mapToRectData } from '../utils';
 
 interface ComponentProps {
   rect: Rect;
   editable: boolean;
+  elements: Rect[];
+  setElements: Dispatch<SetStateAction<Rect[]>>;
 }
 
 function Rectangle(props: ComponentProps) {
   const {
     rect: { id, x, y, width, height },
-    editable
+    editable,
+    elements,
+    setElements
   } = props;
 
   const [showMoreList, setShowMoreList] = useState(false);
@@ -91,7 +102,16 @@ function Rectangle(props: ComponentProps) {
                 </RBListGroup.Item>
                 <RBListGroup.Item
                   action
-                  onClick={() => console.log('刪除')}
+                  onClick={() => {
+                    const newEls: Rect[] = [...elements].filter(
+                      (el) => el.id !== id
+                    );
+                    setElements(newEls);
+                    localStorage.setItem(
+                      'space_mgmt_areas',
+                      JSON.stringify(mapToRectData(newEls))
+                    );
+                  }}
                   style={{ color: color.error }}
                 >
                   刪除

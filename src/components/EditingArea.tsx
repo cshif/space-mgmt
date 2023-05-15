@@ -444,7 +444,13 @@ function EditingArea({
         >
           {loaded &&
             elements.map((el: Rect) => (
-              <Rectangle rect={el} editable={editable} key={el.id} />
+              <Rectangle
+                rect={el}
+                editable={editable}
+                key={el.id}
+                elements={elements}
+                setElements={setElements}
+              />
             ))}
         </div>
       </div>
