@@ -15,14 +15,17 @@ function ImportFloorPlanImageDialog(props: ComponentProps) {
     const img = document.getElementById(
       'imported-floor-plan-image'
     ) as HTMLImageElement;
-    if (file != null) {
-      img.src = URL.createObjectURL(file);
-      img.style.display = 'block';
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      img.onload?.(() => {
-        URL.revokeObjectURL(img.src);
+    if (file) {
+      const fileReader = new FileReader();
+      fileReader.addEventListener('load', () => {
+        img.src = fileReader.result as string;
+        localStorage.setItem(
+          'space_mgmt_temp_file',
+          fileReader.result as string
+        );
       });
+      fileReader.readAsDataURL(file);
+      img.style.display = 'block';
     }
     props.onClose();
   }
