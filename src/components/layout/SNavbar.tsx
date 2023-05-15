@@ -92,6 +92,8 @@ function SNavbar({
               console.log('清除');
               setElements([]);
               localStorage.removeItem('space_mgmt_areas');
+              localStorage.removeItem('space_mgmt_temp_file');
+              localStorage.removeItem('space_mgmt_file');
 
               setLoaded(false);
 
@@ -111,6 +113,8 @@ function SNavbar({
               console.log('儲存');
               setEditable(false);
               swapContainerAndCanvas(false);
+              const tempFile = localStorage.getItem('space_mgmt_temp_file');
+              localStorage.setItem('space_mgmt_file', tempFile as string);
             }}
           />
         </RBContainer>
