@@ -1,4 +1,4 @@
-import gen from './rought';
+import gen from './rough';
 import type { Drawable } from 'roughjs/bin/core';
 import type {
   Rect,
