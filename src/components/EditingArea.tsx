@@ -85,14 +85,22 @@ function EditingArea({
     useState(false);
 
   useLayoutEffect(() => {
-    if (!loaded) return;
-
+    const img = document.getElementById(
+      'imported-floor-plan-image'
+    ) as HTMLImageElement;
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
+    const rc = rough.canvas(canvas as HTMLCanvasElement, {
+      options: defaultConfig
+    });
 
-    if (loaded) {
-      const img = document.getElementById(
-        'imported-floor-plan-image'
-      ) as HTMLImageElement;
+    const storedFile = localStorage.getItem('space_mgmt_file');
+    if (storedFile) {
+      img.src = storedFile;
+      setLoaded(true);
+    }
+    if (!loaded) return;
+    else {
       const imgRect = img.getBoundingClientRect();
       canvas.width = imgRect.width;
       canvas.height = imgRect.height;
@@ -103,17 +111,11 @@ function EditingArea({
       coord.current = { x: left, y: top };
     }
 
-    const ctx = canvas.getContext('2d');
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
-
-    const rc = rough.canvas(canvas as HTMLCanvasElement, {
-      options: defaultConfig
-    });
-
     elements.forEach((el: Rect) => {
       rc.draw(el.rect);
     });
-  }, [loaded, elements]);
+  }, [loaded, setLoaded, elements]);
 
   function handleMouseDown(event: MouseEvent) {
     const isHoverOnRect = !!getRectByCoordinate(
