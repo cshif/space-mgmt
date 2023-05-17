@@ -176,6 +176,7 @@ function EditingArea({
       info: defaultInfo,
       config: defaultConfig
     };
+    setRectId(newEl.id);
     const newEls: RectData[] = [...elements, newEl];
     setTempLocalData(newEls);
   }
@@ -314,7 +315,7 @@ function EditingArea({
   }
 
   function paint() {
-    if (!drawing || rectId) return;
+    if (!drawing) return;
 
     const copyEls: RectData[] = [...tempLocalData];
     const index = elements?.length - 1 ?? 0;
