@@ -154,7 +154,7 @@ export function getReferenceCoordinateByDirection(
 }
 
 // ref. https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
-export function editingRectOverlapWithOthers(
+export function overlappingRectId(
   fixedRect: RectData,
   movingRect: RectData
 ): string | boolean {

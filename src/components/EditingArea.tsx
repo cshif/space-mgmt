@@ -15,7 +15,7 @@ import {
   getRectByCoordinate,
   getDirectionByCoordinate,
   getUpdatedRectData,
-  editingRectOverlapWithOthers,
+  overlappingRectId,
   swapContainerAndCanvas
 } from '../utils';
 import type { Drawable } from 'roughjs/bin/core';
@@ -250,8 +250,7 @@ function EditingArea({
     let updatedRectData = { ...(rect as RectData), ...updatedCoordinate };
     const overlapRectIds = copyEls
       .filter(
-        (el) =>
-          el.id !== rectId && editingRectOverlapWithOthers(el, rect as RectData)
+        (el) => el.id !== rectId && overlappingRectId(el, rect as RectData)
       )
       .map((el) => el.id);
     if (overlapRectIds.length) {
@@ -296,8 +295,7 @@ function EditingArea({
     );
     const overlapRectIds = copyEls
       .filter(
-        (el) =>
-          el.id !== rectId && editingRectOverlapWithOthers(el, rect as RectData)
+        (el) => el.id !== rectId && overlappingRectId(el, rect as RectData)
       )
       .map((el) => el.id);
     if (overlapRectIds.length) {
@@ -333,7 +331,7 @@ function EditingArea({
         const rect = tempLocalData.find(
           (i: RectData) => i.id === elements[index].id
         ) as RectData;
-        return el.id !== rect.id && editingRectOverlapWithOthers(el, rect);
+        return el.id !== rect.id && overlappingRectId(el, rect);
       })
       .map((el) => el.id);
     if (overlapRectIds.length) {
