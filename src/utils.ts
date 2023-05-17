@@ -8,7 +8,7 @@ import type {
   Coordinate,
   Offset
 } from './types';
-import defaultConfig from './config.ts';
+import { defaultConfig } from './config';
 
 export function createRect({
   id,
@@ -16,10 +16,11 @@ export function createRect({
   y,
   width,
   height,
+  info,
   config = defaultConfig
 }: RectData): Rect {
   const rect: Drawable = gen.rectangle(x, y, width, height, config);
-  return { id, x, y, width, height, rect };
+  return { id, x, y, width, height, info, config, rect };
 }
 
 export function getEditingAreaOffset(): Offset {
@@ -33,9 +34,9 @@ export function getEditingAreaOffset(): Offset {
   };
 }
 
-export function mapToRectData(arr: Rect[] | RectData[]) {
+export function mapToRectData(arr: Rect[] | RectData[]): RectData[] {
   return arr?.map?.((i: RectData) => ({
-    id: i.id,
+    ...i,
     x: i.width > 0 ? i.x : i.x + i.width,
     y: i.height > 0 ? i.y : i.y + i.height,
     width: Math.abs(i.width),
@@ -48,7 +49,7 @@ export function getRectByCoordinate(
   coordY: number
 ): RectData | null {
   const localData = JSON.parse(
-    localStorage.getItem('space_mgmt_areas') as string
+    localStorage.getItem('space_mgmt_temp_areas') as string
   );
   return (
     localData?.find((el: RectData) => {
@@ -117,14 +118,13 @@ export function getUpdatedRectData(
   originalCoordinate: Coordinate,
   grabbedOrdinates: GrabbedOrdinates
 ): RectData {
-  const { id } = rectData;
   const { x: initialX, y: initialY } = originalCoordinate;
   const { finalX, finalY } = grabbedOrdinates;
 
   const diffX = finalX - initialX;
   const diffY = finalY - initialY;
   return {
-    id,
+    ...rectData,
     x: diffX > 0 ? initialX : finalX,
     y: diffY > 0 ? initialY : finalY,
     width: Math.abs(diffX),

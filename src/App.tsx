@@ -2,8 +2,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react';
 import SNavbar from './components/layout/SNavbar';
 import EditingArea from './components/EditingArea';
-import { createRect, mapToRectData } from './utils';
-import { Rect, RectData } from './types';
+import { mapToRectData } from './utils';
+import { RectData } from './types';
 
 function App() {
   const [loaded, setLoaded] = useState(false);
@@ -11,9 +11,8 @@ function App() {
   const localData: RectData[] = JSON.parse(
     localStorage.getItem('space_mgmt_areas') as string
   );
-  const initElements: Rect[] =
-    mapToRectData(localData)?.map?.((i: RectData) => createRect(i)) ?? [];
-  const [elements, setElements] = useState<Rect[]>(initElements);
+  const initElements: RectData[] = mapToRectData(localData);
+  const [elements, setElements] = useState<RectData[]>(initElements ?? []);
 
   const [editable, setEditable] = useState(false);
 

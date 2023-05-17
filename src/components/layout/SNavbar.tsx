@@ -4,7 +4,7 @@ import RBContainer from 'react-bootstrap/Container';
 import RBNavbar from 'react-bootstrap/Navbar';
 import { SIconButton, SVerticalSeparator } from '../shared';
 import ImportFloorPlanImageDialog from '../ImportFloorPlanImageDialog';
-import { Rect } from '../../types';
+import { RectData } from '../../types';
 import { swapContainerAndCanvas } from '../../utils';
 import { RiSettings2Line } from 'react-icons/ri';
 import { RiFileUploadLine } from 'react-icons/ri';
@@ -41,8 +41,8 @@ const title = css`
 
 interface ComponentProps {
   setLoaded: Dispatch<SetStateAction<boolean>>;
-  elements: Rect[];
-  setElements: Dispatch<SetStateAction<Rect[]>>;
+  elements: RectData[];
+  setElements: Dispatch<SetStateAction<RectData[]>>;
   editable: boolean;
   setEditable: Dispatch<SetStateAction<boolean>>;
   collision: boolean;
@@ -109,7 +109,7 @@ function SNavbar({
             variant='light'
             iconName={<RiSave3Line />}
             iconSize='1.5rem'
-            disabled={collision || !elements.length}
+            disabled={collision || !elements?.length}
             onClick={() => {
               console.log('儲存');
               setEditable(false);

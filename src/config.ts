@@ -1,11 +1,11 @@
-import type { Options } from 'roughjs/bin/core';
+import { RectData } from './types';
 
 export const color = {
   error: '#CC543A',
   blueprint: '#35637C'
 };
 
-const defaultConfig: Options = {
+export const defaultConfig: RectData['config'] = {
   roughness: 0.8,
   fill: color.blueprint,
   fillStyle: 'sunburst',
@@ -14,4 +14,8 @@ const defaultConfig: Options = {
   strokeWidth: 3
 };
 
-export default defaultConfig;
+export const defaultInfo: RectData['info'] = {
+  name: '',
+  description: '',
+  color: color.blueprint
+};

@@ -8,15 +8,15 @@ import {
 import RBListGroup from 'react-bootstrap/ListGroup';
 import { SIconButton } from './shared';
 import { FiMoreVertical } from 'react-icons/fi';
-import type { Rect } from '../types';
+import type { RectData } from '../types';
 import { color } from '../config';
 import { mapToRectData } from '../utils';
 
 interface ComponentProps {
-  rect: Rect;
+  rect: RectData;
   editable: boolean;
-  elements: Rect[];
-  setElements: Dispatch<SetStateAction<Rect[]>>;
+  elements: RectData[];
+  setElements: Dispatch<SetStateAction<RectData[]>>;
 }
 
 function Rectangle(props: ComponentProps) {
@@ -26,6 +26,8 @@ function Rectangle(props: ComponentProps) {
     elements,
     setElements
   } = props;
+
+  const rectData: RectData | undefined = elements.find((el) => el.id === id);
 
   const [showMoreList, setShowMoreList] = useState(false);
 
@@ -50,7 +52,7 @@ function Rectangle(props: ComponentProps) {
         left: `${width > 0 ? x : x + width}px`,
         width: `${Math.abs(width)}px`,
         height: `${Math.abs(height)}px`,
-        background: `${color.blueprint}1A`,
+        background: `${rectData?.info?.color}33`,
         cursor: `${editable ? 'grab' : 'pointer'}`
       }}
       onMouseOver={(e: MouseEvent) => {
@@ -103,7 +105,7 @@ function Rectangle(props: ComponentProps) {
                 <RBListGroup.Item
                   action
                   onClick={() => {
-                    const newEls: Rect[] = [...elements].filter(
+                    const newEls: RectData[] = [...elements].filter(
                       (el) => el.id !== id
                     );
                     setElements(newEls);

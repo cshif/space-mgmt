@@ -18,8 +18,8 @@ import {
   editingRectOverlapWithOthers,
   swapContainerAndCanvas
 } from '../utils';
+import type { Drawable } from 'roughjs/bin/core';
 import {
-  Rect,
   RectData,
   GrabbedOrdinates,
   CursorStyles,
@@ -27,7 +27,7 @@ import {
   Coordinate,
   Offset
 } from '../types';
-import defaultConfig, { color } from '../config';
+import { defaultConfig, color, defaultInfo } from '../config';
 import Rectangle from './Rectangle';
 import { SIconButton } from './shared';
 import { IoAddCircleOutline } from 'react-icons/io5';
@@ -36,8 +36,8 @@ import ImportFloorPlanImageDialog from './ImportFloorPlanImageDialog';
 interface ComponentProps {
   loaded: boolean;
   setLoaded: Dispatch<SetStateAction<boolean>>;
-  elements: Rect[];
-  setElements: Dispatch<SetStateAction<Rect[]>>;
+  elements: RectData[];
+  setElements: Dispatch<SetStateAction<RectData[]>>;
   editable: boolean;
   setEditable: Dispatch<SetStateAction<boolean>>;
   setCollision: Dispatch<SetStateAction<boolean>>;
@@ -57,9 +57,8 @@ function EditingArea({
   const offset = useRef<Offset>({ top: 0, left: 0 });
   const coord = useRef<Coordinate>({ x: 0, y: 0 });
 
-  const localData: RectData[] = JSON.parse(
-    localStorage.getItem('space_mgmt_temp_areas') as string
-  );
+  const localData: RectData[] =
+    JSON.parse(localStorage.getItem('space_mgmt_temp_areas') as string) ?? [];
 
   const [drawing, setDrawing] = useState(false);
   const [rectId, setRectId] = useState<string | null>(null);
@@ -112,10 +111,19 @@ function EditingArea({
     }
 
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
-    elements.forEach((el: Rect) => {
-      rc.draw(el.rect);
+    elements?.forEach?.((el: RectData) => {
+      const rect: Drawable = createRect(el).rect;
+      rc.draw(rect);
     });
   }, [loaded, setLoaded, elements]);
+
+  function setTempAreas(newEls: RectData[]) {
+    setElements(newEls);
+    localStorage.setItem(
+      'space_mgmt_temp_areas',
+      JSON.stringify(mapToRectData(newEls))
+    );
+  }
 
   function handleMouseDown(event: MouseEvent) {
     const isHoverOnRect = !!getRectByCoordinate(
@@ -159,19 +167,17 @@ function EditingArea({
   function startDrawing() {
     setDrawing(true);
 
-    const newEl = createRect({
+    const newEl = {
       id: `ref_${uuid()}`,
       x: coord.current.x,
       y: coord.current.y,
       width: 0,
-      height: 0
-    });
-    const newEls: Rect[] = [...elements, newEl];
-    setElements(newEls);
-    localStorage.setItem(
-      'space_mgmt_temp_areas',
-      JSON.stringify(mapToRectData(newEls))
-    );
+      height: 0,
+      info: defaultInfo,
+      config: defaultConfig
+    };
+    const newEls: RectData[] = [...elements, newEl];
+    setTempAreas(newEls);
   }
 
   function handleMouseUp() {
@@ -193,14 +199,10 @@ function EditingArea({
       finalY: 0
     });
 
-    const filteredEls = [...elements].filter((i: Rect) => {
+    const filteredEls = [...elements].filter((i: RectData) => {
       return i.width && i.height;
     });
-    setElements(filteredEls);
-    localStorage.setItem(
-      'space_mgmt_temp_areas',
-      JSON.stringify(mapToRectData(filteredEls))
-    );
+    setTempAreas(filteredEls);
   }
 
   function handleMouseMove(event: MouseEvent) {
@@ -210,7 +212,7 @@ function EditingArea({
     };
 
     if (drawing) {
-      draw();
+      paint();
       return;
     }
     if (grabbing) {
@@ -236,7 +238,7 @@ function EditingArea({
       finalY: coord.current.y
     });
 
-    const copyEls: Rect[] = [...elements];
+    const copyEls: RectData[] = [...elements];
     const rectIndex = localData.findIndex((i: RectData) => i.id === rectId);
     const rect = localData.find((i: RectData) => i.id === rectId);
     const updatedCoordinate = {
@@ -261,12 +263,8 @@ function EditingArea({
       setCollision(false);
     }
 
-    copyEls[rectIndex] = createRect(updatedRectData);
-    setElements(copyEls);
-    localStorage.setItem(
-      'space_mgmt_temp_areas',
-      JSON.stringify(mapToRectData(copyEls))
-    );
+    copyEls[rectIndex] = updatedRectData;
+    setTempAreas(copyEls);
   }
 
   function resize() {
@@ -286,7 +284,7 @@ function EditingArea({
 
     setGrabbedCoordinates(modifiedGrabbedCoordinates);
 
-    const copyEls: Rect[] = [...elements];
+    const copyEls: RectData[] = [...elements];
     const rectIndex = localData.findIndex((i: RectData) => i.id === rectId);
     const rect = localData.find((i: RectData) => i.id === rectId);
 
@@ -311,23 +309,19 @@ function EditingArea({
       setCollision(false);
     }
 
-    copyEls[rectIndex] = createRect(newRectData);
-    setElements(copyEls);
-    localStorage.setItem(
-      'space_mgmt_temp_areas',
-      JSON.stringify(mapToRectData(copyEls))
-    );
+    copyEls[rectIndex] = newRectData;
+    setTempAreas(copyEls);
   }
 
-  function draw() {
+  function paint() {
     if (!drawing || rectId) return;
 
-    const copyEls: Rect[] = [...elements];
-    const index = elements.length - 1;
+    const copyEls: RectData[] = [...localData];
+    const index = elements?.length - 1 ?? 0;
     const { x, y } = elements[index];
 
     let updatedRectData: RectData = {
-      id: copyEls[index].id,
+      ...copyEls[index],
       x,
       y,
       width: coord.current.x - x,
@@ -351,12 +345,8 @@ function EditingArea({
       setCollision(false);
     }
 
-    copyEls[index] = createRect(updatedRectData);
-    setElements(copyEls);
-    localStorage.setItem(
-      'space_mgmt_temp_areas',
-      JSON.stringify(mapToRectData(copyEls))
-    );
+    copyEls[index] = updatedRectData;
+    setTempAreas(copyEls);
   }
 
   function handlePointerMove() {
@@ -442,8 +432,8 @@ function EditingArea({
             height: '100%'
           }}
         >
-          {loaded &&
-            elements.map((el: Rect) => (
+          {(loaded &&
+            elements?.map((el: RectData) => (
               <Rectangle
                 rect={el}
                 editable={editable}
@@ -451,7 +441,8 @@ function EditingArea({
                 elements={elements}
                 setElements={setElements}
               />
-            ))}
+            ))) ??
+            []}
         </div>
       </div>
       {!loaded && (
