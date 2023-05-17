@@ -49,3 +49,5 @@ export interface Offset {
   top: number;
   left: number;
 }
+
+export type SpaceInfoForm = RectData['info'];

@@ -1,7 +1,7 @@
 import {
-  MouseEvent,
   useState,
   useEffect,
+  useCallback,
   Dispatch,
   SetStateAction
 } from 'react';
@@ -11,6 +11,7 @@ import { FiMoreVertical } from 'react-icons/fi';
 import type { RectData } from '../types';
 import { color } from '../config';
 import { mapToRectData } from '../utils';
+import SpaceInfoDialog from './SpaceInfoDialog';
 
 interface ComponentProps {
   rect: RectData;
@@ -35,12 +36,28 @@ function Rectangle(props: ComponentProps) {
     setShowMoreList(false);
   }
 
+  const handleMouseOver = useCallback(() => {
+    const rect = document.getElementById(id) as HTMLDivElement;
+    if (!editable) {
+      rect.style.outline = `5px dotted ${rectData?.info?.color}`;
+    }
+  }, [id, editable, rectData?.info?.color]);
+
+  const handleMouseOut = useCallback(() => {
+    const rect = document.getElementById(id) as HTMLDivElement;
+    if (!editable) {
+      rect.style.outline = '';
+    }
+  }, [id, editable]);
+
   useEffect(() => {
     window.addEventListener('click', hideMoreList);
     return () => {
       window.removeEventListener('click', hideMoreList);
     };
-  }, []);
+  });
+
+  const [open, setOpen] = useState(false);
 
   return (
     <div
@@ -55,18 +72,9 @@ function Rectangle(props: ComponentProps) {
         background: `${rectData?.info?.color}33`,
         cursor: `${editable ? 'grab' : 'pointer'}`
       }}
-      onMouseOver={(e: MouseEvent) => {
-        if (!editable) {
-          (
-            e.target as HTMLDivElement
-          ).style.outline = `1px solid ${color.blueprint}`;
-        }
-      }}
-      onMouseOut={(e: MouseEvent) => {
-        if (!editable) {
-          (e.target as HTMLDivElement).style.outline = '';
-        }
-      }}
+      onMouseOver={handleMouseOver}
+      onMouseOut={handleMouseOut}
+      onClick={() => setOpen(true)}
     >
       <div style={{ width: '100%', height: '100%', position: 'relative' }}>
         {editable && (
@@ -99,7 +107,7 @@ function Rectangle(props: ComponentProps) {
                   zIndex: 1
                 }}
               >
-                <RBListGroup.Item action onClick={() => console.log('編輯')}>
+                <RBListGroup.Item action onClick={() => setOpen(true)}>
                   編輯
                 </RBListGroup.Item>
                 <RBListGroup.Item
@@ -123,6 +131,14 @@ function Rectangle(props: ComponentProps) {
           </>
         )}
       </div>
+      <SpaceInfoDialog
+        id={id}
+        editable={editable}
+        show={open}
+        onClose={() => setOpen(false)}
+        elements={elements}
+        setElements={setElements}
+      />
     </div>
   );
 }
