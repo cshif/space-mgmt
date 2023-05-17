@@ -57,7 +57,7 @@ function EditingArea({
   const offset = useRef<Offset>({ top: 0, left: 0 });
   const coord = useRef<Coordinate>({ x: 0, y: 0 });
 
-  const localData: RectData[] =
+  const tempLocalData: RectData[] =
     JSON.parse(localStorage.getItem('space_mgmt_temp_areas') as string) ?? [];
 
   const [drawing, setDrawing] = useState(false);
@@ -117,7 +117,7 @@ function EditingArea({
     });
   }, [loaded, setLoaded, elements]);
 
-  function setTempAreas(newEls: RectData[]) {
+  function setTempLocalData(newEls: RectData[]) {
     setElements(newEls);
     localStorage.setItem(
       'space_mgmt_temp_areas',
@@ -177,7 +177,7 @@ function EditingArea({
       config: defaultConfig
     };
     const newEls: RectData[] = [...elements, newEl];
-    setTempAreas(newEls);
+    setTempLocalData(newEls);
   }
 
   function handleMouseUp() {
@@ -202,7 +202,7 @@ function EditingArea({
     const filteredEls = [...elements].filter((i: RectData) => {
       return i.width && i.height;
     });
-    setTempAreas(filteredEls);
+    setTempLocalData(filteredEls);
   }
 
   function handleMouseMove(event: MouseEvent) {
@@ -239,8 +239,8 @@ function EditingArea({
     });
 
     const copyEls: RectData[] = [...elements];
-    const rectIndex = localData.findIndex((i: RectData) => i.id === rectId);
-    const rect = localData.find((i: RectData) => i.id === rectId);
+    const rectIndex = tempLocalData.findIndex((i: RectData) => i.id === rectId);
+    const rect = tempLocalData.find((i: RectData) => i.id === rectId);
     const updatedCoordinate = {
       x: originalCoordinate.x + pageX - grabbedCoordinates.initialX,
       y: originalCoordinate.y + pageY - grabbedCoordinates.initialY
@@ -264,7 +264,7 @@ function EditingArea({
     }
 
     copyEls[rectIndex] = updatedRectData;
-    setTempAreas(copyEls);
+    setTempLocalData(copyEls);
   }
 
   function resize() {
@@ -285,8 +285,8 @@ function EditingArea({
     setGrabbedCoordinates(modifiedGrabbedCoordinates);
 
     const copyEls: RectData[] = [...elements];
-    const rectIndex = localData.findIndex((i: RectData) => i.id === rectId);
-    const rect = localData.find((i: RectData) => i.id === rectId);
+    const rectIndex = tempLocalData.findIndex((i: RectData) => i.id === rectId);
+    const rect = tempLocalData.find((i: RectData) => i.id === rectId);
 
     let newRectData = getUpdatedRectData(
       initialRectData as RectData,
@@ -310,13 +310,13 @@ function EditingArea({
     }
 
     copyEls[rectIndex] = newRectData;
-    setTempAreas(copyEls);
+    setTempLocalData(copyEls);
   }
 
   function paint() {
     if (!drawing || rectId) return;
 
-    const copyEls: RectData[] = [...localData];
+    const copyEls: RectData[] = [...tempLocalData];
     const index = elements?.length - 1 ?? 0;
     const { x, y } = elements[index];
 
@@ -329,7 +329,7 @@ function EditingArea({
     };
     const overlapRectIds = copyEls
       .filter((el) => {
-        const rect = localData.find(
+        const rect = tempLocalData.find(
           (i: RectData) => i.id === elements[index].id
         ) as RectData;
         return el.id !== rect.id && editingRectOverlapWithOthers(el, rect);
@@ -346,7 +346,7 @@ function EditingArea({
     }
 
     copyEls[index] = updatedRectData;
-    setTempAreas(copyEls);
+    setTempLocalData(copyEls);
   }
 
   function handlePointerMove() {
