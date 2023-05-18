@@ -28,7 +28,14 @@ function Rectangle(props: ComponentProps) {
     setElements
   } = props;
 
-  const rectData: RectData | undefined = elements.find((el) => el.id === id);
+  const tempLocalData: RectData[] =
+    JSON.parse(localStorage.getItem('space_mgmt_temp_areas') as string) ?? [];
+  const localData: RectData[] =
+    JSON.parse(localStorage.getItem('space_mgmt_areas') as string) ?? [];
+
+  const rectData: RectData | undefined = (
+    editable ? tempLocalData : localData
+  ).find((el) => el.id === id);
 
   const [showMoreList, setShowMoreList] = useState(false);
 
