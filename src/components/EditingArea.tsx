@@ -11,6 +11,7 @@ import { v4 as uuid } from 'uuid';
 import {
   createRect,
   getEditingAreaOffset,
+  formatRawRectData,
   mapToRectData,
   getRectByCoordinate,
   getDirectionByCoordinate,
@@ -125,6 +126,55 @@ function EditingArea({
     );
   }
 
+  function handleEditingRectOverlapping(editingRectData: RectData): RectData {
+    const copyEls: RectData[] = [...elements];
+    const rectData = tempLocalData.find((i: RectData) => i.id === rectId);
+    const overlapRectIds = copyEls
+      .filter((el) => el.id !== rectId)
+      .filter((el) => overlappingRectId(el, rectData as RectData))
+      .map((el) => el.id);
+    setCollision(!!overlapRectIds.length);
+    return {
+      ...editingRectData,
+      config: {
+        ...(initialRectData as RectData).config,
+        ...(overlapRectIds.length
+          ? { fill: color.error, stroke: color.error }
+          : {
+              fill: initialRectData?.config?.fill,
+              stroke: initialRectData?.config?.stroke
+            })
+      }
+    };
+  }
+
+  function handleOverlapping(rectsData: RectData[]): RectData[] {
+    const fixedRectsData = rectsData.filter((el) => el.id !== rectId);
+    const editingRectData = rectsData.find((el) => el.id === rectId);
+    const overlapRectIds = fixedRectsData
+      .filter((el) =>
+        overlappingRectId(el, formatRawRectData(editingRectData as RectData))
+      )
+      .map((el) => el.id);
+    setCollision(!!overlapRectIds.length);
+    return rectsData.map((el) => {
+      const rectDivColor = document
+        .getElementById(el.id)
+        ?.style?.background.replace(/[^,]+(?=\))/, '1');
+      return el.id === rectId
+        ? handleEditingRectOverlapping(el)
+        : {
+            ...el,
+            config: {
+              ...el.config,
+              ...(overlapRectIds.includes(el.id)
+                ? { fill: color.error, stroke: color.error }
+                : { fill: rectDivColor, stroke: rectDivColor })
+            }
+          };
+    });
+  }
+
   function handleMouseDown(event: MouseEvent) {
     const isHoverOnRect = !!getRectByCoordinate(
       coord.current.x,
@@ -177,6 +227,7 @@ function EditingArea({
       config: defaultConfig
     };
     setRectId(newEl.id);
+    setInitialRectData(newEl);
     const newEls: RectData[] = [...elements, newEl];
     setTempLocalData(newEls);
   }
@@ -239,31 +290,16 @@ function EditingArea({
       finalY: coord.current.y
     });
 
-    const copyEls: RectData[] = [...elements];
+    let copyEls: RectData[] = [...elements];
     const rectIndex = tempLocalData.findIndex((i: RectData) => i.id === rectId);
-    const rect = tempLocalData.find((i: RectData) => i.id === rectId);
+    const rectData = tempLocalData.find((i: RectData) => i.id === rectId);
     const updatedCoordinate = {
       x: originalCoordinate.x + pageX - grabbedCoordinates.initialX,
       y: originalCoordinate.y + pageY - grabbedCoordinates.initialY
     };
 
-    let updatedRectData = { ...(rect as RectData), ...updatedCoordinate };
-    const overlapRectIds = copyEls
-      .filter(
-        (el) => el.id !== rectId && overlappingRectId(el, rect as RectData)
-      )
-      .map((el) => el.id);
-    if (overlapRectIds.length) {
-      setCollision(true);
-      updatedRectData = {
-        ...updatedRectData,
-        config: { ...defaultConfig, fill: color.error, stroke: color.error }
-      };
-    } else {
-      setCollision(false);
-    }
-
-    copyEls[rectIndex] = updatedRectData;
+    copyEls[rectIndex] = { ...(rectData as RectData), ...updatedCoordinate };
+    copyEls = handleOverlapping(copyEls);
     setTempLocalData(copyEls);
   }
 
@@ -284,67 +320,33 @@ function EditingArea({
 
     setGrabbedCoordinates(modifiedGrabbedCoordinates);
 
-    const copyEls: RectData[] = [...elements];
+    let copyEls: RectData[] = [...elements];
     const rectIndex = tempLocalData.findIndex((i: RectData) => i.id === rectId);
-    const rect = tempLocalData.find((i: RectData) => i.id === rectId);
 
-    let newRectData = getUpdatedRectData(
+    copyEls[rectIndex] = getUpdatedRectData(
       initialRectData as RectData,
       originalCoordinate,
       modifiedGrabbedCoordinates
     );
-    const overlapRectIds = copyEls
-      .filter(
-        (el) => el.id !== rectId && overlappingRectId(el, rect as RectData)
-      )
-      .map((el) => el.id);
-    if (overlapRectIds.length) {
-      setCollision(true);
-      newRectData = {
-        ...newRectData,
-        config: { ...defaultConfig, fill: color.error, stroke: color.error }
-      };
-    } else {
-      setCollision(false);
-    }
-
-    copyEls[rectIndex] = newRectData;
+    copyEls = handleOverlapping(copyEls);
     setTempLocalData(copyEls);
   }
 
   function paint() {
     if (!drawing) return;
 
-    const copyEls: RectData[] = [...tempLocalData];
+    let copyEls: RectData[] = [...elements];
     const index = elements?.length - 1 ?? 0;
     const { x, y } = elements[index];
 
-    let updatedRectData: RectData = {
+    copyEls[index] = {
       ...copyEls[index],
       x,
       y,
       width: coord.current.x - x,
       height: coord.current.y - y
     };
-    const overlapRectIds = copyEls
-      .filter((el) => {
-        const rect = tempLocalData.find(
-          (i: RectData) => i.id === elements[index].id
-        ) as RectData;
-        return el.id !== rect.id && overlappingRectId(el, rect);
-      })
-      .map((el) => el.id);
-    if (overlapRectIds.length) {
-      setCollision(true);
-      updatedRectData = {
-        ...updatedRectData,
-        config: { ...defaultConfig, fill: color.error, stroke: color.error }
-      };
-    } else {
-      setCollision(false);
-    }
-
-    copyEls[index] = updatedRectData;
+    copyEls = handleOverlapping(copyEls);
     setTempLocalData(copyEls);
   }
 

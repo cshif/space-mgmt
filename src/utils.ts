@@ -34,14 +34,18 @@ export function getEditingAreaOffset(): Offset {
   };
 }
 
+export function formatRawRectData(rectData: RectData): RectData {
+  return {
+    ...rectData,
+    x: rectData.width > 0 ? rectData.x : rectData.x + rectData.width,
+    y: rectData.height > 0 ? rectData.y : rectData.y + rectData.height,
+    width: Math.abs(rectData.width),
+    height: Math.abs(rectData.height)
+  };
+}
+
 export function mapToRectData(arr: Rect[] | RectData[]): RectData[] {
-  return arr?.map?.((i: RectData) => ({
-    ...i,
-    x: i.width > 0 ? i.x : i.x + i.width,
-    y: i.height > 0 ? i.y : i.y + i.height,
-    width: Math.abs(i.width),
-    height: Math.abs(i.height)
-  }));
+  return arr?.map?.(formatRawRectData);
 }
 
 export function getRectByCoordinate(
