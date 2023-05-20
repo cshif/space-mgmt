@@ -1,7 +1,7 @@
+import { verticalSeparator } from '../../assets/style';
+
 function SVerticalSeparator() {
-  return (
-    <div style={{ width: '2px', height: '36px', background: '#eeeeee' }} />
-  );
+  return <div className={verticalSeparator} />;
 }
 
 export default SVerticalSeparator;

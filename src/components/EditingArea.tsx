@@ -7,6 +7,15 @@ import {
   SetStateAction
 } from 'react';
 import rough from 'roughjs';
+import {
+  editingAreaRoot,
+  editingArea,
+  imgContainer,
+  importedFloorPlanImage,
+  canvas,
+  container,
+  addIconContainer
+} from '../assets/style';
 import { v4 as uuid } from 'uuid';
 import {
   createRect,
@@ -381,37 +390,16 @@ function EditingArea({
   }
 
   return (
-    <div
-      style={
-        loaded
-          ? {
-              padding: '2rem',
-              border: '1px solid #333',
-              borderRadius: '1rem',
-              background: 'white'
-            }
-          : {}
-      }
-    >
-      <div
-        id='editing_area'
-        style={{
-          position: 'relative',
-          width: 'fit-content',
-          height: 'fit-content'
-        }}
-      >
-        <div id='img-container' style={{ maxWidth: '90vw', maxHeight: '90vh' }}>
+    <div className={loaded ? editingAreaRoot : ''}>
+      <div id='editing_area' className={editingArea}>
+        <div id='img-container' className={imgContainer}>
           <img
             id='imported-floor-plan-image'
             src=''
             alt='floor-plan-image'
             onLoad={() => setLoaded(true)}
-            style={{
-              display: loaded ? 'block' : 'none',
-              maxWidth: '80vw',
-              maxHeight: '80vh'
-            }}
+            className={importedFloorPlanImage}
+            style={{ display: loaded ? 'block' : 'none' }}
           />
         </div>
         <canvas
@@ -422,25 +410,9 @@ function EditingArea({
           onMouseUp={handleMouseUp}
           onMouseMove={handleMouseMove}
           onPointerMove={handlePointerMove}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            display: 'block'
-          }}
+          className={canvas}
         />
-        <div
-          id='container'
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%'
-          }}
-        >
+        <div id='container' className={container}>
           {(loaded &&
             elements?.map((el: RectData) => (
               <Rectangle
@@ -455,15 +427,7 @@ function EditingArea({
         </div>
       </div>
       {!loaded && (
-        <div
-          style={{
-            width: '100vw',
-            height: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
+        <div className={addIconContainer}>
           <SIconButton
             iconName={<IoAddCircleOutline />}
             iconSize='4rem'

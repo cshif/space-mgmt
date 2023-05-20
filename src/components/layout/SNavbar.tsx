@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from 'react';
-import { css } from '@linaria/core';
+import { navbar, rbNavbar, rbContainer, navbarTitle } from '../../assets/style';
 import RBContainer from 'react-bootstrap/Container';
 import RBNavbar from 'react-bootstrap/Navbar';
 import RBForm from 'react-bootstrap/Form';
@@ -13,33 +13,6 @@ import { RiEraserLine } from 'react-icons/ri';
 import { RiSave3Line } from 'react-icons/ri';
 import { RiFileDownloadLine } from 'react-icons/ri';
 import { RiEditLine } from 'react-icons/ri';
-
-const rb_navbar = css`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-`;
-
-const rb_container = css`
-  display: flex;
-  flex-basis: fit-content;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 0;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 10px rgba(5, 0, 56, 0.08);
-  background: #fff;
-`;
-
-const title = css`
-  min-width: fit-content;
-  margin-bottom: 0;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-`;
 
 interface ComponentProps {
   setLoaded: Dispatch<SetStateAction<boolean>>;
@@ -68,9 +41,9 @@ function SNavbar({
   );
 
   return (
-    <RBNavbar fixed='top' className={rb_navbar}>
-      <RBContainer className={rb_container}>
-        <h1 className={title}>好想空間</h1>
+    <RBNavbar fixed='top' className={rbNavbar}>
+      <RBContainer className={rbContainer}>
+        <h1 className={navbarTitle}>好想空間</h1>
         <SVerticalSeparator />
         {editable ? (
           <RBForm.Control
@@ -86,10 +59,10 @@ function SNavbar({
                 localStorage.setItem('space_mgmt_temp_title', newValue);
               }
             }}
-            style={{ minWidth: '160px', padding: '.3rem .75rem' }}
+            className={navbar}
           />
         ) : (
-          <h1 className={title}>{docTitle}</h1>
+          <h1 className={navbarTitle}>{docTitle}</h1>
         )}
         <SVerticalSeparator />
         <SIconButton
@@ -100,7 +73,7 @@ function SNavbar({
         />
       </RBContainer>
       {editable ? (
-        <RBContainer className={rb_container}>
+        <RBContainer className={rbContainer}>
           <SIconButton
             variant='light'
             iconName={<RiFileUploadLine />}
@@ -163,7 +136,7 @@ function SNavbar({
           />
         </RBContainer>
       ) : (
-        <RBContainer className={rb_container}>
+        <RBContainer className={rbContainer}>
           <SIconButton
             variant='light'
             iconName={<RiFileDownloadLine />}

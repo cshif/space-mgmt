@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState, ChangeEvent } from 'react';
-import { css } from '@linaria/core';
+import { closeIcon, fieldName } from '../assets/style';
 import RBModal from 'react-bootstrap/Modal';
 import RBForm from 'react-bootstrap/Form';
 import RBButton from 'react-bootstrap/Button';
@@ -17,11 +17,6 @@ interface ComponentProps {
   elements: RectData[];
   setElements: Dispatch<SetStateAction<RectData[]>>;
 }
-
-const fieldName = css`
-  margin-bottom: 0.25rem;
-  font-weight: bold;
-`;
 
 function SpaceInfoDialog(props: ComponentProps) {
   const { id, editable, show, onClose, elements, setElements } = props;
@@ -61,11 +56,7 @@ function SpaceInfoDialog(props: ComponentProps) {
             onClose();
           }}
           iconSize='1.5rem'
-          style={{
-            backgroundColor: 'white',
-            border: 'none',
-            cursor: 'pointer'
-          }}
+          className={closeIcon}
         />
       </RBModal.Header>
       <RBModal.Body>

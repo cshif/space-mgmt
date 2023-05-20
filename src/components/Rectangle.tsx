@@ -5,6 +5,7 @@ import {
   Dispatch,
   SetStateAction
 } from 'react';
+import { description, moreIcon, showMoreListContainer } from '../assets/style';
 import RBOverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import RBTooltip from 'react-bootstrap/Tooltip';
 import RBListGroup from 'react-bootstrap/ListGroup';
@@ -87,16 +88,7 @@ function Rectangle(props: ComponentProps) {
         <p className='my-0'>
           [名稱] <br /> {rectData?.info?.name ?? ''}
         </p>
-        <p
-          className='my-0'
-          style={{
-            overflow: 'hidden',
-            display: '-webkit-box',
-            WebkitBoxOrient: 'vertical',
-            WebkitLineClamp: 4,
-            whiteSpace: 'pre-wrap'
-          }}
-        >
+        <p className={`${description} my-0`}>
           [描述] {rectData?.info?.description && <br />}{' '}
           {rectData?.info?.description ?? ''}
         </p>
@@ -130,7 +122,7 @@ function Rectangle(props: ComponentProps) {
           removeOutline();
         }}
       >
-        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+        <div className={showMoreListContainer}>
           {editable && (
             <>
               <SIconButton
@@ -143,13 +135,7 @@ function Rectangle(props: ComponentProps) {
                 iconName={<FiMoreVertical />}
                 variant='secondary'
                 iconColor='white'
-                style={{
-                  borderRadius: '50%',
-                  position: 'absolute',
-                  bottom: '.5rem',
-                  right: '.5rem',
-                  zIndex: 1
-                }}
+                className={moreIcon}
               />
               {showMoreList && (
                 <RBListGroup

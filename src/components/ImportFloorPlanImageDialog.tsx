@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { floorPlanImg } from '../assets/style';
 import RBButton from 'react-bootstrap/Button';
 import RBModal from 'react-bootstrap/Modal';
 import RBForm from 'react-bootstrap/Form';
@@ -64,7 +65,7 @@ function ImportFloorPlanImageDialog(props: ComponentProps) {
             src=''
             id='imported-image-preview'
             alt='floor-plan-image'
-            style={{ display: 'none', width: '100%', padding: '1rem' }}
+            className={floorPlanImg}
           />
         </div>
       </RBModal.Body>
