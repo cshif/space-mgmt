@@ -11,6 +11,8 @@ interface ComponentProps {
   style?: CSSProperties;
   disabled?: boolean;
   onClick?: MouseEventHandler;
+  onMouseEnter?: MouseEventHandler;
+  onMouseLeave?: MouseEventHandler;
 }
 
 function SIconButton(props: ComponentProps) {
@@ -21,12 +23,16 @@ function SIconButton(props: ComponentProps) {
     iconSize = '1rem',
     style = {},
     disabled = false,
-    onClick
+    onClick,
+    onMouseEnter,
+    onMouseLeave
   } = props;
 
   return (
     <RBButton
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       variant={variant}
       disabled={disabled}
       style={{
