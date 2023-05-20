@@ -116,10 +116,7 @@ function SNavbar({
             iconSize='1.5rem'
             onClick={() => {
               setElements([]);
-              localStorage.removeItem('space_mgmt_temp_areas');
-              localStorage.removeItem('space_mgmt_areas');
-              localStorage.removeItem('space_mgmt_temp_file');
-              localStorage.removeItem('space_mgmt_file');
+              resetData();
 
               setLoaded(false);
 
@@ -145,8 +142,13 @@ function SNavbar({
                 'space_mgmt_title',
                 tempDocTitle || defaultDocTitle
               );
-              const tempFile = localStorage.getItem('space_mgmt_temp_file');
-              localStorage.setItem('space_mgmt_file', tempFile as string);
+              const localTempImgFile = localStorage.getItem(
+                'space_mgmt_temp_file'
+              );
+              localStorage.setItem(
+                'space_mgmt_file',
+                localTempImgFile as string
+              );
               const tempAreaData = localStorage.getItem(
                 'space_mgmt_temp_areas'
               );

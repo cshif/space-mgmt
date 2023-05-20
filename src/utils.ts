@@ -15,7 +15,11 @@ export function resetData() {
   const localImgFile = localStorage.getItem('space_mgmt_file');
   if (!localData || !localImgFile) {
     localStorage.removeItem('space_mgmt_temp_areas');
+    localStorage.removeItem('space_mgmt_areas');
     localStorage.removeItem('space_mgmt_temp_file');
+    localStorage.removeItem('space_mgmt_file');
+    localStorage.removeItem('space_mgmt_temp_title');
+    localStorage.removeItem('space_mgmt_title');
   }
 }
 

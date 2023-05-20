@@ -23,6 +23,7 @@ function ImportFloorPlanImageDialog(props: ComponentProps) {
           'space_mgmt_temp_file',
           fileReader.result as string
         );
+        localStorage.setItem('space_mgmt_file', fileReader.result as string);
       });
       fileReader.readAsDataURL(file);
       img.style.display = 'block';

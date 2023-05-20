@@ -95,9 +95,10 @@ function EditingArea({
       options: defaultConfig
     });
 
-    const storedFile = localStorage.getItem('space_mgmt_file');
-    if (storedFile) {
-      img.src = storedFile;
+    const localImgFile = localStorage.getItem('space_mgmt_file');
+    const localData = localStorage.getItem('space_mgmt_areas');
+    if (localImgFile && localData) {
+      img.src = localImgFile;
       setLoaded(true);
     }
     if (!loaded) return;
