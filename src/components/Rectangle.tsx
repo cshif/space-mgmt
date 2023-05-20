@@ -108,8 +108,8 @@ function Rectangle(props: ComponentProps) {
                   minWidth: '144px',
                   padding: '2rem',
                   position: 'absolute',
-                  top: `${height - 42}px`,
-                  left: `${width - 42}px`,
+                  top: `${Math.abs(height) - 42}px`,
+                  left: `${Math.abs(width) - 42}px`,
                   cursor: 'pointer',
                   zIndex: 1
                 }}
