@@ -36,6 +36,7 @@ function Rectangle(props: ComponentProps) {
   const localData: RectData[] =
     JSON.parse(localStorage.getItem('space_mgmt_areas') as string) ?? [];
 
+  const rectDiv = document.getElementById(id) as HTMLDivElement;
   const rectData: RectData | undefined = (
     editable ? tempLocalData : localData
   ).find((el) => el.id === id);
@@ -46,21 +47,23 @@ function Rectangle(props: ComponentProps) {
     setShowMoreList(false);
   }
 
+  function addOutline() {
+    rectDiv.style.outline = `5px dotted ${rectData?.info?.color}`;
+  }
+
+  function removeOutline() {
+    rectDiv.style.outline = '';
+  }
+
   const handleMouseEnter = useCallback(() => {
-    const rect = document.getElementById(id) as HTMLDivElement;
-    if (!editable) {
-      rect.style.outline = `5px dotted ${rectData?.info?.color}`;
-    }
+    if (!editable) addOutline();
     setShowTooltip(true);
-  }, [id, editable, rectData?.info?.color]);
+  }, [addOutline, editable]);
 
   const handleMouseLeave = useCallback(() => {
-    const rect = document.getElementById(id) as HTMLDivElement;
-    if (!editable) {
-      rect.style.outline = '';
-    }
+    if (!editable) removeOutline();
     setShowTooltip(false);
-  }, [id, editable]);
+  }, [removeOutline, editable]);
 
   useEffect(() => {
     window.addEventListener('click', hideMoreList);
@@ -123,6 +126,7 @@ function Rectangle(props: ComponentProps) {
         onClick={() => {
           setOpenEditDialog(true);
           setShowTooltip(false);
+          removeOutline();
         }}
       >
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
@@ -132,6 +136,7 @@ function Rectangle(props: ComponentProps) {
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowMoreList(true);
+                  removeOutline();
                 }}
                 onMouseEnter={() => setShowTooltip(false)}
                 iconName={<FiMoreVertical />}
