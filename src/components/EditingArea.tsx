@@ -142,8 +142,14 @@ function EditingArea({
         ...(overlapRectIds.length
           ? { fill: color.error, stroke: color.error }
           : {
-              fill: initialRectData?.config?.fill,
-              stroke: initialRectData?.config?.stroke
+              fill:
+                initialRectData?.config?.fill === color.error
+                  ? defaultConfig.fill
+                  : initialRectData?.config?.fill,
+              stroke:
+                initialRectData?.config?.stroke === color.error
+                  ? defaultConfig.stroke
+                  : initialRectData?.config?.stroke
             })
       }
     };
