@@ -142,8 +142,8 @@ function EditingArea({
         ...(overlapRectIds.length
           ? { fill: color.error, stroke: color.error }
           : {
-              fill: initialRectData?.config?.fill || defaultConfig.fill,
-              stroke: initialRectData?.config?.stroke || defaultConfig.stroke
+              fill: initialRectData?.config?.fill,
+              stroke: initialRectData?.config?.stroke
             })
       }
     };
