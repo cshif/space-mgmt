@@ -178,7 +178,9 @@ function SNavbar({
             onClick={() => {
               setEditable(true);
               swapContainerAndCanvas(true);
-              resetData();
+              const localData = localStorage.getItem('space_mgmt_areas');
+              const localImgFile = localStorage.getItem('space_mgmt_file');
+              if (!localData || !localImgFile) resetData();
             }}
           />
         </RBContainer>
