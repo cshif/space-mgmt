@@ -97,7 +97,8 @@ function Rectangle(props: ComponentProps) {
             whiteSpace: 'pre-wrap'
           }}
         >
-          [描述] <br /> {rectData?.info?.description ?? ''}
+          [描述] {rectData?.info?.description && <br />}{' '}
+          {rectData?.info?.description ?? ''}
         </p>
       </div>
     </RBTooltip>
