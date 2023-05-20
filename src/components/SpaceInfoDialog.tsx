@@ -98,7 +98,7 @@ function SpaceInfoDialog(props: ComponentProps) {
                 }
               />
             ) : (
-              <p>{form.description}</p>
+              <p style={{ whiteSpace: 'pre-wrap' }}>{form.description}</p>
             )}
           </RBForm.Group>
           <RBForm.Group
