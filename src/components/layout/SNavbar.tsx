@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import { css } from '@linaria/core';
 import RBContainer from 'react-bootstrap/Container';
 import RBNavbar from 'react-bootstrap/Navbar';
+import RBForm from 'react-bootstrap/Form';
 import { SIconButton, SVerticalSeparator } from '../shared';
 import ImportFloorPlanImageDialog from '../ImportFloorPlanImageDialog';
 import { RectData } from '../../types';
@@ -33,6 +34,7 @@ const rb_container = css`
 `;
 
 const title = css`
+  min-width: fit-content;
   margin-bottom: 0;
   font-size: 24px;
   font-weight: bold;
@@ -59,12 +61,36 @@ function SNavbar({
   const [showImportFloorPlanImageDialog, setShowImportFloorPlanImageDialog] =
     useState(false);
 
+  const defaultDocTitle = 'Untitled';
+  const localTempDocTitle = localStorage.getItem('space_mgmt_temp_title');
+  const [docTitle, setDocTitle] = useState(
+    localTempDocTitle || defaultDocTitle
+  );
+
   return (
     <RBNavbar fixed='top' className={rb_navbar}>
       <RBContainer className={rb_container}>
         <h1 className={title}>好想空間</h1>
         <SVerticalSeparator />
-        <h1 className={title}>Untitled</h1>
+        {editable ? (
+          <RBForm.Control
+            type='text'
+            value={docTitle}
+            onChange={(e) => {
+              const newValue = e.target.value;
+              if (newValue == null || !newValue.length) {
+                setDocTitle(defaultDocTitle);
+                localStorage.setItem('space_mgmt_temp_title', defaultDocTitle);
+              } else {
+                setDocTitle(newValue);
+                localStorage.setItem('space_mgmt_temp_title', newValue);
+              }
+            }}
+            style={{ minWidth: '160px', padding: '.3rem .75rem' }}
+          />
+        ) : (
+          <h1 className={title}>{docTitle}</h1>
+        )}
         <SVerticalSeparator />
         <SIconButton
           variant='light'
@@ -112,6 +138,13 @@ function SNavbar({
             onClick={() => {
               setEditable(false);
               swapContainerAndCanvas(false);
+              const tempDocTitle = localStorage.getItem(
+                'space_mgmt_temp_title'
+              );
+              localStorage.setItem(
+                'space_mgmt_title',
+                tempDocTitle || defaultDocTitle
+              );
               const tempFile = localStorage.getItem('space_mgmt_temp_file');
               localStorage.setItem('space_mgmt_file', tempFile as string);
               const tempAreaData = localStorage.getItem(
