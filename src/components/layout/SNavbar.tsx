@@ -151,6 +151,12 @@ function SNavbar({
                 'space_mgmt_temp_areas'
               );
               localStorage.setItem('space_mgmt_areas', tempAreaData as string);
+
+              const canvas = document.getElementById(
+                'canvas'
+              ) as HTMLCanvasElement;
+              const ctx = canvas.getContext('2d');
+              ctx?.clearRect(0, 0, canvas.width, canvas.height);
             }}
           />
         </RBContainer>
