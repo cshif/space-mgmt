@@ -72,7 +72,7 @@ function Rectangle(props: ComponentProps) {
     };
   });
 
-  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openSpaceInfoDialog, setOpenSpaceInfoDialog] = useState(false);
 
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -124,7 +124,7 @@ function Rectangle(props: ComponentProps) {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={() => {
-          setOpenEditDialog(true);
+          setOpenSpaceInfoDialog(true);
           setShowTooltip(false);
           removeOutline();
         }}
@@ -164,7 +164,7 @@ function Rectangle(props: ComponentProps) {
                   <RBListGroup.Item
                     action
                     onClick={() => {
-                      setOpenEditDialog(true);
+                      setOpenSpaceInfoDialog(true);
                     }}
                   >
                     編輯
@@ -193,8 +193,8 @@ function Rectangle(props: ComponentProps) {
         <SpaceInfoDialog
           id={id}
           editable={editable}
-          show={openEditDialog}
-          onClose={() => setOpenEditDialog(false)}
+          show={openSpaceInfoDialog}
+          onClose={() => setOpenSpaceInfoDialog(false)}
           elements={elements}
           setElements={setElements}
         />
