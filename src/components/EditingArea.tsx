@@ -17,7 +17,8 @@ import {
   getDirectionByCoordinate,
   getUpdatedRectData,
   overlappingRectId,
-  swapContainerAndCanvas
+  swapContainerAndCanvas,
+  resetData
 } from '../utils';
 import type { Drawable } from 'roughjs/bin/core';
 import {
@@ -465,6 +466,7 @@ function EditingArea({
               setEditable(true);
               swapContainerAndCanvas(true);
               setShowImportFloorPlanImageDialog(true);
+              resetData();
             }}
           />
           <ImportFloorPlanImageDialog

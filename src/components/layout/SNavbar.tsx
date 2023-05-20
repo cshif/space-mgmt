@@ -5,7 +5,7 @@ import RBNavbar from 'react-bootstrap/Navbar';
 import { SIconButton, SVerticalSeparator } from '../shared';
 import ImportFloorPlanImageDialog from '../ImportFloorPlanImageDialog';
 import { RectData } from '../../types';
-import { swapContainerAndCanvas } from '../../utils';
+import { resetData, swapContainerAndCanvas } from '../../utils';
 import { RiSettings2Line } from 'react-icons/ri';
 import { RiFileUploadLine } from 'react-icons/ri';
 import { RiEraserLine } from 'react-icons/ri';
@@ -140,6 +140,7 @@ function SNavbar({
               console.log('編輯');
               setEditable(true);
               swapContainerAndCanvas(true);
+              resetData();
             }}
           />
         </RBContainer>

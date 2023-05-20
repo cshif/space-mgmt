@@ -10,6 +10,15 @@ import type {
 } from './types';
 import { defaultConfig } from './config';
 
+export function resetData() {
+  const localData = localStorage.getItem('space_mgmt_areas');
+  const localImgFile = localStorage.getItem('space_mgmt_file');
+  if (!localData || !localImgFile) {
+    localStorage.removeItem('space_mgmt_temp_areas');
+    localStorage.removeItem('space_mgmt_temp_file');
+  }
+}
+
 export function createRect({
   id,
   x,
