@@ -89,7 +89,6 @@ function SNavbar({
             iconName={<RiEraserLine />}
             iconSize='1.5rem'
             onClick={() => {
-              console.log('清除');
               setElements([]);
               localStorage.removeItem('space_mgmt_temp_areas');
               localStorage.removeItem('space_mgmt_areas');
@@ -111,7 +110,6 @@ function SNavbar({
             iconSize='1.5rem'
             disabled={collision || !elements?.length}
             onClick={() => {
-              console.log('儲存');
               setEditable(false);
               swapContainerAndCanvas(false);
               const tempFile = localStorage.getItem('space_mgmt_temp_file');
@@ -137,7 +135,6 @@ function SNavbar({
             iconName={<RiEditLine />}
             iconSize='1.5rem'
             onClick={() => {
-              console.log('編輯');
               setEditable(true);
               swapContainerAndCanvas(true);
               resetData();
