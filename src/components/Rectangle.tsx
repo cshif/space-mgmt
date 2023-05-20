@@ -133,8 +133,7 @@ function Rectangle(props: ComponentProps) {
           {editable && (
             <>
               <SIconButton
-                onClick={(e) => {
-                  e.stopPropagation();
+                onClick={() => {
                   setShowMoreList(true);
                   removeOutline();
                 }}
