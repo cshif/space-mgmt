@@ -1,10 +1,5 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useState,
-  ChangeEvent,
-  MouseEvent
-} from 'react';
+import { useState, ChangeEvent, MouseEvent, useContext } from 'react';
+import Context from '../ctx';
 import { closeIcon, fieldName } from '../assets/style';
 import RBModal from 'react-bootstrap/Modal';
 import RBForm from 'react-bootstrap/Form';
@@ -17,15 +12,14 @@ import { mapToRectData } from '../utils';
 
 interface ComponentProps {
   id: RectData['id'];
-  editable: boolean;
   show: boolean;
   onClose: () => void;
-  elements: RectData[];
-  setElements: Dispatch<SetStateAction<RectData[]>>;
 }
 
 function SpaceInfoDialog(props: ComponentProps) {
-  const { id, editable, show, onClose, elements, setElements } = props;
+  const { elements, setElements, editable } = useContext(Context);
+
+  const { id, show, onClose } = props;
 
   const localData: RectData[] = JSON.parse(
     localStorage.getItem('space_mgmt_temp_areas') as string

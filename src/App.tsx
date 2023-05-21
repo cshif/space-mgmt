@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react';
+import Context from './ctx';
 import SNavbar from './components/layout/SNavbar';
 import EditingArea from './components/EditingArea';
 import { mapToRectData } from './utils';
@@ -19,25 +20,21 @@ function App() {
   const [collision, setCollision] = useState(false);
 
   return (
-    <>
-      <SNavbar
-        setLoaded={setLoaded}
-        elements={elements}
-        setElements={setElements}
-        editable={editable}
-        setEditable={setEditable}
-        collision={collision}
-      />
-      <EditingArea
-        loaded={loaded}
-        setLoaded={setLoaded}
-        elements={elements}
-        setElements={setElements}
-        editable={editable}
-        setEditable={setEditable}
-        setCollision={setCollision}
-      />
-    </>
+    <Context.Provider
+      value={{
+        loaded,
+        setLoaded,
+        elements,
+        setElements,
+        editable,
+        setEditable,
+        collision,
+        setCollision
+      }}
+    >
+      <SNavbar />
+      <EditingArea />
+    </Context.Provider>
   );
 }
 

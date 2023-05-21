@@ -1,11 +1,11 @@
-import { Dispatch, SetStateAction, useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useContext } from 'react';
+import Context from '../../ctx';
 import { navbar, rbNavbar, rbContainer, navbarTitle } from '../../assets/style';
 import RBContainer from 'react-bootstrap/Container';
 import RBNavbar from 'react-bootstrap/Navbar';
 import RBForm from 'react-bootstrap/Form';
 import { SIconButton, SVerticalSeparator } from '../shared';
 import ImportFloorPlanImageDialog from '../ImportFloorPlanImageDialog';
-import { RectData } from '../../types';
 import { resetData, swapContainerAndCanvas } from '../../utils';
 import { RiSettings2Line } from 'react-icons/ri';
 import { RiFileUploadLine } from 'react-icons/ri';
@@ -14,23 +14,10 @@ import { RiSave3Line } from 'react-icons/ri';
 import { RiFileDownloadLine } from 'react-icons/ri';
 import { RiEditLine } from 'react-icons/ri';
 
-interface ComponentProps {
-  setLoaded: Dispatch<SetStateAction<boolean>>;
-  elements: RectData[];
-  setElements: Dispatch<SetStateAction<RectData[]>>;
-  editable: boolean;
-  setEditable: Dispatch<SetStateAction<boolean>>;
-  collision: boolean;
-}
+function SNavbar() {
+  const { setLoaded, elements, setElements, editable, setEditable, collision } =
+    useContext(Context);
 
-function SNavbar({
-  setLoaded,
-  elements,
-  setElements,
-  editable,
-  setEditable,
-  collision
-}: ComponentProps) {
   const [showImportFloorPlanImageDialog, setShowImportFloorPlanImageDialog] =
     useState(false);
 

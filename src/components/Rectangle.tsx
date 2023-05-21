@@ -1,10 +1,5 @@
-import {
-  useState,
-  useEffect,
-  useCallback,
-  Dispatch,
-  SetStateAction
-} from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
+import Context from '../ctx';
 import { description, moreIcon, showMoreListContainer } from '../assets/style';
 import RBOverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import RBTooltip from 'react-bootstrap/Tooltip';
@@ -19,17 +14,12 @@ import SpaceInfoDialog from './SpaceInfoDialog';
 
 interface ComponentProps {
   rect: RectData;
-  editable: boolean;
-  elements: RectData[];
-  setElements: Dispatch<SetStateAction<RectData[]>>;
 }
 
 function Rectangle(props: ComponentProps) {
+  const { elements, setElements, editable } = useContext(Context);
   const {
-    rect: { id, x, y, width, height },
-    editable,
-    elements,
-    setElements
+    rect: { id, x, y, width, height }
   } = props;
 
   const tempLocalData: RectData[] =
@@ -180,11 +170,8 @@ function Rectangle(props: ComponentProps) {
         </div>
         <SpaceInfoDialog
           id={id}
-          editable={editable}
           show={openSpaceInfoDialog}
           onClose={() => setOpenSpaceInfoDialog(false)}
-          elements={elements}
-          setElements={setElements}
         />
       </div>
     </RBOverlayTrigger>

@@ -3,10 +3,10 @@ import {
   useLayoutEffect,
   useRef,
   MouseEvent,
-  Dispatch,
-  SetStateAction
+  useContext
 } from 'react';
 import rough from 'roughjs';
+import Context from '../ctx';
 import {
   editingAreaRoot,
   editingArea,
@@ -44,25 +44,16 @@ import { SIconButton } from './shared';
 import { IoAddCircleOutline } from 'react-icons/io5';
 import ImportFloorPlanImageDialog from './ImportFloorPlanImageDialog';
 
-interface ComponentProps {
-  loaded: boolean;
-  setLoaded: Dispatch<SetStateAction<boolean>>;
-  elements: RectData[];
-  setElements: Dispatch<SetStateAction<RectData[]>>;
-  editable: boolean;
-  setEditable: Dispatch<SetStateAction<boolean>>;
-  setCollision: Dispatch<SetStateAction<boolean>>;
-}
+function EditingArea() {
+  const {
+    loaded,
+    setLoaded,
+    elements,
+    setElements,
+    setEditable,
+    setCollision
+  } = useContext(Context);
 
-function EditingArea({
-  loaded,
-  setLoaded,
-  elements,
-  setElements,
-  editable,
-  setEditable,
-  setCollision
-}: ComponentProps) {
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   const offset = useRef<Offset>({ top: 0, left: 0 });
@@ -424,13 +415,7 @@ function EditingArea({
         <div id='container' className={container}>
           {(loaded &&
             elements?.map((el: RectData) => (
-              <Rectangle
-                rect={el}
-                editable={editable}
-                key={el.id}
-                elements={elements}
-                setElements={setElements}
-              />
+              <Rectangle rect={el} key={el.id} />
             ))) ??
             []}
         </div>
