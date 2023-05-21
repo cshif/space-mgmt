@@ -12,6 +12,24 @@ interface ComponentProps {
 function ImportFloorPlanImageDialog(props: ComponentProps) {
   const [file, setFile] = useState<File | null>(null);
 
+  function importImg() {
+    const input = document.getElementById(
+      'floor-plan-image'
+    ) as HTMLInputElement | null;
+    if (input && input.files) {
+      setFile(input.files[0]);
+      const previewImg = document.getElementById(
+        'imported-image-preview'
+      ) as HTMLImageElement;
+      const fileReader = new FileReader();
+      fileReader.addEventListener('load', () => {
+        previewImg.src = fileReader.result as string;
+      });
+      fileReader.readAsDataURL(input.files[0]);
+      previewImg.style.display = 'block';
+    }
+  }
+
   function handleImport() {
     const img = document.getElementById(
       'imported-floor-plan-image'
@@ -39,26 +57,7 @@ function ImportFloorPlanImageDialog(props: ComponentProps) {
       </RBModal.Header>
       <RBModal.Body>
         <RBForm.Group controlId='floor-plan-image'>
-          <RBForm.Control
-            type='file'
-            onChange={() => {
-              const input = document.getElementById(
-                'floor-plan-image'
-              ) as HTMLInputElement | null;
-              if (input && input.files) {
-                setFile(input.files[0]);
-                const previewImg = document.getElementById(
-                  'imported-image-preview'
-                ) as HTMLImageElement;
-                const fileReader = new FileReader();
-                fileReader.addEventListener('load', () => {
-                  previewImg.src = fileReader.result as string;
-                });
-                fileReader.readAsDataURL(input.files[0]);
-                previewImg.style.display = 'block';
-              }
-            }}
-          />
+          <RBForm.Control type='file' onChange={importImg} />
         </RBForm.Group>
         <div>
           <img

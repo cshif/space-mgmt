@@ -1,4 +1,10 @@
-import { Dispatch, SetStateAction, useState, ChangeEvent } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useState,
+  ChangeEvent,
+  MouseEvent
+} from 'react';
 import { closeIcon, fieldName } from '../assets/style';
 import RBModal from 'react-bootstrap/Modal';
 import RBForm from 'react-bootstrap/Form';
@@ -39,6 +45,27 @@ function SpaceInfoDialog(props: ComponentProps) {
     fieldName: keyof SpaceInfoForm
   ) {
     setForm({ ...form, [fieldName]: event.target.value });
+  }
+
+  function save(e: MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
+    const updatedRectData = {
+      ...localData[rectIndex],
+      config: {
+        ...localData[rectIndex]?.config,
+        fill: form.color,
+        stroke: form.color
+      },
+      info: { ...localData[rectIndex]?.info, ...form }
+    };
+    const copyEls = [...elements];
+    copyEls[rectIndex] = updatedRectData;
+    setElements(copyEls);
+    localStorage.setItem(
+      'space_mgmt_temp_areas',
+      JSON.stringify(mapToRectData(copyEls))
+    );
+    onClose();
   }
 
   return (
@@ -120,29 +147,7 @@ function SpaceInfoDialog(props: ComponentProps) {
           >
             取消
           </RBButton>
-          <RBButton
-            onClick={(e) => {
-              e.stopPropagation();
-              const updatedRectData = {
-                ...localData[rectIndex],
-                config: {
-                  ...localData[rectIndex]?.config,
-                  fill: form.color,
-                  stroke: form.color
-                },
-                info: { ...localData[rectIndex]?.info, ...form }
-              };
-              const copyEls = [...elements];
-              copyEls[rectIndex] = updatedRectData;
-              setElements(copyEls);
-              localStorage.setItem(
-                'space_mgmt_temp_areas',
-                JSON.stringify(mapToRectData(copyEls))
-              );
-              onClose();
-            }}
-            variant='success'
-          >
+          <RBButton onClick={save} variant='success'>
             儲存
           </RBButton>
         </RBModal.Footer>

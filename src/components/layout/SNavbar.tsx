@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useState, ChangeEvent } from 'react';
 import { navbar, rbNavbar, rbContainer, navbarTitle } from '../../assets/style';
 import RBContainer from 'react-bootstrap/Container';
 import RBNavbar from 'react-bootstrap/Navbar';
@@ -40,6 +40,51 @@ function SNavbar({
     localTempDocTitle || defaultDocTitle
   );
 
+  function editDocTitle(e: ChangeEvent<HTMLInputElement>) {
+    const newValue = e.target.value;
+    if (newValue == null || !newValue.length) {
+      setDocTitle(defaultDocTitle);
+      localStorage.setItem('space_mgmt_temp_title', defaultDocTitle);
+    } else {
+      setDocTitle(newValue);
+      localStorage.setItem('space_mgmt_temp_title', newValue);
+    }
+  }
+
+  function eraseDoc() {
+    setElements([]);
+    resetData();
+
+    setLoaded(false);
+
+    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    canvas.width = 0;
+    canvas.height = 0;
+  }
+
+  function saveDoc() {
+    setEditable(false);
+    swapContainerAndCanvas(false);
+    const tempDocTitle = localStorage.getItem('space_mgmt_temp_title');
+    localStorage.setItem('space_mgmt_title', tempDocTitle || defaultDocTitle);
+    const localTempImgFile = localStorage.getItem('space_mgmt_temp_file');
+    localStorage.setItem('space_mgmt_file', localTempImgFile as string);
+    const tempAreaData = localStorage.getItem('space_mgmt_temp_areas');
+    localStorage.setItem('space_mgmt_areas', tempAreaData as string);
+
+    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
+    ctx?.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function editDoc() {
+    setEditable(true);
+    swapContainerAndCanvas(true);
+    const localData = localStorage.getItem('space_mgmt_areas');
+    const localImgFile = localStorage.getItem('space_mgmt_file');
+    if (!localData || !localImgFile) resetData();
+  }
+
   return (
     <RBNavbar fixed='top' className={rbNavbar}>
       <RBContainer className={rbContainer}>
@@ -49,16 +94,7 @@ function SNavbar({
           <RBForm.Control
             type='text'
             value={docTitle}
-            onChange={(e) => {
-              const newValue = e.target.value;
-              if (newValue == null || !newValue.length) {
-                setDocTitle(defaultDocTitle);
-                localStorage.setItem('space_mgmt_temp_title', defaultDocTitle);
-              } else {
-                setDocTitle(newValue);
-                localStorage.setItem('space_mgmt_temp_title', newValue);
-              }
-            }}
+            onChange={editDocTitle}
             className={navbar}
           />
         ) : (
@@ -87,52 +123,14 @@ function SNavbar({
             variant='light'
             iconName={<RiEraserLine />}
             iconSize='1.5rem'
-            onClick={() => {
-              setElements([]);
-              resetData();
-
-              setLoaded(false);
-
-              const canvas = document.getElementById(
-                'canvas'
-              ) as HTMLCanvasElement;
-              canvas.width = 0;
-              canvas.height = 0;
-            }}
+            onClick={eraseDoc}
           />
           <SIconButton
             variant='light'
             iconName={<RiSave3Line />}
             iconSize='1.5rem'
             disabled={collision || !elements?.length}
-            onClick={() => {
-              setEditable(false);
-              swapContainerAndCanvas(false);
-              const tempDocTitle = localStorage.getItem(
-                'space_mgmt_temp_title'
-              );
-              localStorage.setItem(
-                'space_mgmt_title',
-                tempDocTitle || defaultDocTitle
-              );
-              const localTempImgFile = localStorage.getItem(
-                'space_mgmt_temp_file'
-              );
-              localStorage.setItem(
-                'space_mgmt_file',
-                localTempImgFile as string
-              );
-              const tempAreaData = localStorage.getItem(
-                'space_mgmt_temp_areas'
-              );
-              localStorage.setItem('space_mgmt_areas', tempAreaData as string);
-
-              const canvas = document.getElementById(
-                'canvas'
-              ) as HTMLCanvasElement;
-              const ctx = canvas.getContext('2d');
-              ctx?.clearRect(0, 0, canvas.width, canvas.height);
-            }}
+            onClick={saveDoc}
           />
         </RBContainer>
       ) : (
@@ -148,13 +146,7 @@ function SNavbar({
             variant='light'
             iconName={<RiEditLine />}
             iconSize='1.5rem'
-            onClick={() => {
-              setEditable(true);
-              swapContainerAndCanvas(true);
-              const localData = localStorage.getItem('space_mgmt_areas');
-              const localImgFile = localStorage.getItem('space_mgmt_file');
-              if (!localData || !localImgFile) resetData();
-            }}
+            onClick={editDoc}
           />
         </RBContainer>
       )}

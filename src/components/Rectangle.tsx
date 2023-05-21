@@ -75,6 +75,15 @@ function Rectangle(props: ComponentProps) {
 
   const [openSpaceInfoDialog, setOpenSpaceInfoDialog] = useState(false);
 
+  function deleteRect() {
+    const newEls: RectData[] = [...elements].filter((el) => el.id !== id);
+    setElements(newEls);
+    localStorage.setItem(
+      'space_mgmt_temp_areas',
+      JSON.stringify(mapToRectData(newEls))
+    );
+  }
+
   const [showTooltip, setShowTooltip] = useState(false);
 
   const renderTooltip = (props: OverlayTriggerRenderProps) => (
@@ -159,16 +168,7 @@ function Rectangle(props: ComponentProps) {
                   </RBListGroup.Item>
                   <RBListGroup.Item
                     action
-                    onClick={() => {
-                      const newEls: RectData[] = [...elements].filter(
-                        (el) => el.id !== id
-                      );
-                      setElements(newEls);
-                      localStorage.setItem(
-                        'space_mgmt_temp_areas',
-                        JSON.stringify(mapToRectData(newEls))
-                      );
-                    }}
+                    onClick={deleteRect}
                     style={{ color: color.error }}
                   >
                     刪除

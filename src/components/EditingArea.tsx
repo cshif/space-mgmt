@@ -137,6 +137,15 @@ function EditingArea({
     );
   }
 
+  function addFloorPlanImg() {
+    setEditable(true);
+    swapContainerAndCanvas(true);
+    setShowImportFloorPlanImageDialog(true);
+    const localData = localStorage.getItem('space_mgmt_areas');
+    const localImgFile = localStorage.getItem('space_mgmt_file');
+    if (!localData || !localImgFile) resetData();
+  }
+
   function handleEditingRectOverlapping(editingRectData: RectData): RectData {
     const copyEls: RectData[] = [...elements];
     const rectData = tempLocalData.find((i: RectData) => i.id === rectId);
@@ -433,14 +442,7 @@ function EditingArea({
             iconSize='4rem'
             variant='light'
             style={{ borderRadius: '50%' }}
-            onClick={() => {
-              setEditable(true);
-              swapContainerAndCanvas(true);
-              setShowImportFloorPlanImageDialog(true);
-              const localData = localStorage.getItem('space_mgmt_areas');
-              const localImgFile = localStorage.getItem('space_mgmt_file');
-              if (!localData || !localImgFile) resetData();
-            }}
+            onClick={addFloorPlanImg}
           />
           <ImportFloorPlanImageDialog
             show={showImportFloorPlanImageDialog}
