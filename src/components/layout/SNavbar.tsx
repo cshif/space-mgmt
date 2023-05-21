@@ -70,6 +70,10 @@ function SNavbar() {
     const localData = localStorage.getItem('space_mgmt_areas');
     const localImgFile = localStorage.getItem('space_mgmt_file');
     if (!localData || !localImgFile) resetData();
+    else {
+      localStorage.setItem('space_mgmt_temp_areas', localData);
+      localStorage.setItem('space_mgmt_temp_file', localImgFile);
+    }
   }
 
   return (
