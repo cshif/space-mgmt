@@ -4,7 +4,7 @@
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
     "devPath": "http://localhost:3000",
-    "distDir": "../build"
+    "distDir": "../dist"
   },
   "package": {
     "productName": "space-mgmt",
@@ -29,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "space-mgmt",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
