@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import RBAlert from 'react-bootstrap/Alert';
 import { floorPlanImg } from '../assets/style';
 import RBButton from 'react-bootstrap/Button';
 import RBModal from 'react-bootstrap/Modal';
@@ -12,11 +13,19 @@ interface ComponentProps {
 function ImportFloorPlanImageDialog(props: ComponentProps) {
   const [file, setFile] = useState<File | null>(null);
 
+  const [showAlert, setShowAlert] = useState(false);
+
   function importImg() {
     const input = document.getElementById(
       'floor-plan-image'
     ) as HTMLInputElement | null;
+    const fileSizeConstraintByBytes = 3 * 1024 * 1024;
     if (input && input.files) {
+      if (input.files[0]?.size > fileSizeConstraintByBytes) {
+        setShowAlert(true);
+        input.value = '';
+        return;
+      }
       setFile(input.files[0]);
       const previewImg = document.getElementById(
         'imported-image-preview'
@@ -57,7 +66,17 @@ function ImportFloorPlanImageDialog(props: ComponentProps) {
       </RBModal.Header>
       <RBModal.Body>
         <RBForm.Group controlId='floor-plan-image'>
-          <RBForm.Control type='file' onChange={importImg} />
+          <RBForm.Control
+            type='file'
+            accept='image/*'
+            onChange={importImg}
+            onClick={() => setShowAlert(false)}
+          />
+          {showAlert && (
+            <RBAlert variant='danger' style={{ marginTop: '.5rem' }}>
+              檔案大小超過 3MB
+            </RBAlert>
+          )}
         </RBForm.Group>
         <div>
           <img
@@ -69,7 +88,9 @@ function ImportFloorPlanImageDialog(props: ComponentProps) {
         </div>
       </RBModal.Body>
       <RBModal.Footer>
-        <RBButton onClick={handleImport}>匯入</RBButton>
+        <RBButton onClick={handleImport} disabled={showAlert}>
+          匯入
+        </RBButton>
       </RBModal.Footer>
     </RBModal>
   );
